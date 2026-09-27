@@ -1,0 +1,270 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import model.IzvrseneUsluge;
+import model.KupljeniLijekovi;
+import model.Lijekovi;
+import model.Racuni;
+import model.Usluge;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmEvidencijaRacuna extends Shell
+{
+
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmEvidencijaRacuna shell = new frmEvidencijaRacuna(null);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Racuni racun;
+	private final Text txtNaziv;
+	private final Text txtDatumIzdavanja;
+	private final Text txtIznosZaPlatit;
+	private final Label lblDatumEvidentiranja;
+	private final Label lblEvidentiranje;
+	private final Text txtKolicina;
+	private final MojComboBox cmbLijekovi;
+	private final MojComboBox cmbUsluge;
+
+	public frmEvidencijaRacuna(Racuni r)
+	{
+		super(SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmEvidencijaRacuna.class, "/ui/slike/Button-Add-icon.png"));
+		setLayout(null);
+		this.racun = r;
+		CTabFolder tabFolder = new CTabFolder(this, SWT.BORDER);
+		tabFolder.setSimple(false);
+		tabFolder.setBounds(0, 0, 434, 309);
+		tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+
+		CTabItem tbtmEvidencijaRauna = new CTabItem(tabFolder, SWT.NONE);
+		tbtmEvidencijaRauna.setText("Evidencija ra\u010Duna");
+
+		Composite composite = new Composite(tabFolder, SWT.NONE);
+		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		composite.setForeground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		tbtmEvidencijaRauna.setControl(composite);
+
+		txtNaziv = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		txtNaziv.setBounds(118, 7, 113, 21);
+
+		Label lblNazivRauna = new Label(composite, SWT.NONE);
+		lblNazivRauna.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblNazivRauna.setBounds(10, 10, 79, 15);
+		lblNazivRauna.setText("Naziv ra\u010Duna:");
+
+		Label lblDatumIzdavanja = new Label(composite, SWT.NONE);
+		lblDatumIzdavanja.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblDatumIzdavanja.setBounds(10, 42, 97, 15);
+		lblDatumIzdavanja.setText("Datum izdavanja:");
+
+		txtDatumIzdavanja = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		txtDatumIzdavanja.setBounds(118, 36, 113, 21);
+
+		Label lblifraRauna = new Label(composite, SWT.NONE);
+		lblifraRauna.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblifraRauna.setBounds(10, 77, 79, 15);
+		lblifraRauna.setText("Iznos za platit:");
+
+		txtIznosZaPlatit = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		txtIznosZaPlatit.setBounds(118, 71, 113, 21);
+
+		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label.setBounds(0, 98, 428, 2);
+
+		Label lblDatum = new Label(composite, SWT.NONE);
+		lblDatum.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblDatum.setBounds(272, 10, 113, 15);
+		lblDatum.setText("Datum evidentiranja:");
+
+		lblDatumEvidentiranja = new Label(composite, SWT.NONE);
+		lblDatumEvidentiranja.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblDatumEvidentiranja.setBounds(272, 42, 65, 15);
+
+		lblEvidentiranje = new Label(composite, SWT.NONE);
+		lblEvidentiranje.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblEvidentiranje.setBounds(10, 118, 408, 15);
+		lblEvidentiranje.setText("EVIDENTIRANJE LIJEKOVA I IZVR\u0160ENIH USLUGA ZA RA\u010CUN:");
+
+		Label lblKoliina = new Label(composite, SWT.NONE);
+		lblKoliina.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblKoliina.setBounds(10, 191, 97, 15);
+		lblKoliina.setText("Koli\u010Dina lijekova:");
+
+		txtKolicina = new Text(composite, SWT.BORDER);
+		txtKolicina.setBounds(118, 188, 155, 21);
+
+		Label lblLijek = new Label(composite, SWT.NONE);
+		lblLijek.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblLijek.setBounds(10, 149, 55, 15);
+		lblLijek.setText("Lijek:");
+
+		cmbLijekovi = new MojComboBox(composite, SWT.READ_ONLY);
+		cmbLijekovi.setBounds(118, 149, 155, 23);
+
+		Label lblUsluga = new Label(composite, SWT.NONE);
+		lblUsluga.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		lblUsluga.setBounds(10, 231, 55, 15);
+		lblUsluga.setText("Usluga");
+
+		cmbUsluge = new MojComboBox(composite, SWT.READ_ONLY);
+		cmbUsluge.setBounds(118, 228, 155, 23);
+
+		Label label_1 = new Label(composite, SWT.NONE);
+		label_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		label_1.setImage(SWTResourceManager.getImage(frmEvidencijaRacuna.class, "/ui/slike/ButtonAddBig.png"));
+		label_1.setBounds(305, 149, 113, 109);
+
+		Button btnSnimi = new Button(this, SWT.NONE);
+		btnSnimi.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnSnimi_widgetSelected(arg0);
+			}
+		});
+		btnSnimi.setBounds(10, 315, 198, 25);
+		btnSnimi.setText("Snimi");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setBounds(243, 315, 191, 25);
+		btnOdustani.setText("Odustani");
+		createContents();
+		ucitajComboLijekovi();
+		ucitajComboUsluge();
+
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Evidencija ra\u010Duna");
+		setSize(450, 385);
+		txtNaziv.setText(racun.getNaziv());
+		SimpleDateFormat smf = new SimpleDateFormat();
+		// txtDatumIzdavanja.setText(smf.format(racun.getDatum()));
+		txtIznosZaPlatit.setText(racun.getIznosZaPlatiti());
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar cal = Calendar.getInstance();
+		txtDatumIzdavanja.setText(dateFormat.format(racun.getDatum()));
+		lblDatumEvidentiranja.setText(dateFormat.format(cal.getTime()).toString());
+		lblEvidentiranje.setText(lblEvidentiranje.getText() + " " + "[" + " " + racun.getNaziv() + " " + "]");
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		this.close();
+	}
+
+	protected void do_btnSnimi_widgetSelected(SelectionEvent arg0)
+	{
+
+		String string = txtKolicina.getText();
+		char[] chars = new char[string.length()];
+		string.getChars(0, chars.length, chars, 0);
+		for (int i = 0; i < chars.length; i++)
+		{
+			if (!('0' <= chars[i] && chars[i] <= '9'))
+			{
+				MessageDialog.openError(null, "Greška", "U polje količina se mogu unijeti samo brojčane vrijednosti!");
+				return;
+			}
+		}
+		if (txtKolicina.getText() == "" || cmbLijekovi.getText() == "" || cmbUsluge.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos!");
+			return;
+		}
+		KupljeniLijekovi k = new KupljeniLijekovi();
+		IzvrseneUsluge u = new IzvrseneUsluge();
+		Integer Kol = Integer.parseInt(txtKolicina.getText());
+		k.setKolicina(Kol);
+		k.setLijekovi(cmbLijekovi.uzmiOznacenuStavku(Lijekovi.class));
+		k.setRacuni(racun);
+		u.setRacuni(racun);
+		u.setUsluge(cmbUsluge.uzmiOznacenuStavku(Usluge.class));
+		servis.Dodavanje.EvidencijaRacuna(k, u);
+		MessageDialog.openInformation(null, "Informacija", "Račun uspješno evidentiran!");
+		OcistiPolja();
+		ucitajComboLijekovi();
+		ucitajComboUsluge();
+	}
+
+	private void OcistiPolja()
+	{
+		txtKolicina.setText("");
+		cmbLijekovi.removeAll();
+		cmbUsluge.removeAll();
+	}
+
+	private void ucitajComboLijekovi()
+	{
+		List<Lijekovi> lista = DAO.getAll(Lijekovi.class);
+		for (Lijekovi l : lista)
+		{
+			cmbLijekovi.dodajStavku(l, l.getNaziv());
+		}
+	}
+
+	private void ucitajComboUsluge()
+	{
+		List<Usluge> lista2 = DAO.getAll(Usluge.class);
+		for (Usluge u : lista2)
+		{
+			cmbUsluge.dodajStavku(u, u.getNaziv());
+		}
+	}
+}

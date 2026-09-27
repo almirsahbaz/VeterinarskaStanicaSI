@@ -1,0 +1,131 @@
+package ui;
+
+import model.StrucneSpreme;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmStrucneSpreme extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmStrucneSpreme shell = new frmStrucneSpreme(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private Label lblNazivStucneSpreme;
+	private Text txtStrucnaSprema;
+	private Button btnSacuvaj;
+
+	private Button btnOdustani;
+	private Label lblDodajStrunuSpremu;
+	private Label lblDodajSS;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmStrucneSpreme(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmStrucneSpreme.class, "/ui/slike/Button-Add-icon.png"));
+
+		lblNazivStucneSpreme = new Label(this, SWT.NONE);
+		lblNazivStucneSpreme.setBounds(10, 70, 88, 15);
+		lblNazivStucneSpreme.setText("Naziv spreme:");
+
+		txtStrucnaSprema = new Text(this, SWT.BORDER);
+		txtStrucnaSprema.setBounds(119, 67, 143, 21);
+
+		btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				StrucneSpreme sprema = new StrucneSpreme();
+				String Sprema = txtStrucnaSprema.getText();
+				sprema.setNaziv(Sprema);
+				if (Sprema.isEmpty())
+				{
+					MessageDialog.openError(null, "Greška", "Polje naziv je obavezno za unos !");
+					return;
+				}
+				Dodavanje.DodajStrucnuSpremu(sprema);
+				MessageDialog.openInformation(null, "Informacija", "Struèna sprema uspješno dodata!");
+				close();
+			}
+		});
+		btnSacuvaj.setBounds(119, 107, 60, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(202, 107, 60, 25);
+		btnOdustani.setText("Odustani");
+
+		lblDodajStrunuSpremu = new Label(this, SWT.NONE);
+		lblDodajStrunuSpremu.setText("Dodaj stru\u010Dnu spremu:");
+		lblDodajStrunuSpremu.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblDodajStrunuSpremu.setBounds(119, 23, 145, 38);
+
+		lblDodajSS = new Label(this, SWT.NONE);
+		lblDodajSS.setImage(SWTResourceManager.getImage(frmStrucneSpreme.class, "/ui/slike/Addfrm.png"));
+		lblDodajSS.setBounds(10, 6, 55, 58);
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Unos struène spreme");
+		setSize(278, 174);
+
+	}
+}

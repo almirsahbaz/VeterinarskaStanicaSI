@@ -1,0 +1,189 @@
+package servis;
+
+import helper.Konekcija;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import model.Administrator;
+import model.Dijagnoze;
+import model.Doktori;
+import model.Lijekovi;
+import model.Pacijent;
+import model.Tehnicko_osoblje;
+import model.Terapija;
+import model.Usluge;
+import model.Vlasnik;
+
+public class Pretraga
+{
+	public static List<Administrator> PretragaAdministratoraI(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select a from Administrator a where a.Ime like :p");
+
+		query.setParameter("p", text + "%");
+		List<Administrator> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Administrator> PretragaAdministratoraP(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select a from Administrator a where a.Prezime like :p");
+
+		query.setParameter("p", text + "%");
+		List<Administrator> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Dijagnoze> PretragaDijagnoza(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select d from Dijagnoze d where d.Naziv_dijagnoze like :p");
+
+		query.setParameter("p", text + "%");
+		List<Dijagnoze> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Doktori> PretragaDoktoraI(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select a from Doktori a where a.ime like :p");
+
+		query.setParameter("p", text + "%");
+		List<Doktori> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Doktori> PretragaDoktoraP(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select a from Doktori a where a.prezime like :p");
+
+		query.setParameter("p", text + "%");
+		List<Doktori> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Lijekovi> PretragaLijekova(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select l from Lijekovi l where l.Naziv like :p");
+
+		query.setParameter("p", text + "%");
+		List<Lijekovi> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Pacijent> PretragaPacijenata(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select p from Pacijent p where p.ime like :p");
+
+		query.setParameter("p", text + "%");
+		List<Pacijent> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Tehnicko_osoblje> PretragaTehnickoI(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select a from Tehnicko_osoblje a where a.ime like :p");
+
+		query.setParameter("p", text + "%");
+		List<Tehnicko_osoblje> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Tehnicko_osoblje> PretragaTehnickoP(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select a from Tehnicko_osoblje a where a.prezime like :p");
+
+		query.setParameter("p", text + "%");
+		List<Tehnicko_osoblje> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Terapija> Pretragaterapija(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select t from Terapija t where t.vrsta like :p");
+
+		query.setParameter("p", text + "%");
+		List<Terapija> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Usluge> Pretragausluga(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select u from Usluge u where u.naziv like :p");
+
+		query.setParameter("p", text + "%");
+		List<Usluge> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+
+	public static List<Vlasnik> Pretragavlasnika(String text)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+
+		Query query = em.createQuery("select v from Vlasnik v where v.ime like :p");
+
+		query.setParameter("p", text + "%");
+		List<Vlasnik> x = query.getResultList();
+
+		em.close();
+
+		return x;
+	}
+}

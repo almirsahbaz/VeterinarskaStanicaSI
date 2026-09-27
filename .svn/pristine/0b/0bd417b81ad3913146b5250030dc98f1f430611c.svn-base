@@ -1,0 +1,143 @@
+package ui;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import model.Pacijent;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Pretraga;
+
+public class frmPretragaPacijenata extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmPretragaPacijenata shell = new frmPretragaPacijenata(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text argument;
+
+	private final Table tblPacijenti;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmPretragaPacijenata(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmPretragaPacijenata.class, "/ui/slike/search-b-icon.png"));
+		setLayout(null);
+
+		argument = new Text(this, SWT.BORDER);
+		argument.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyPressed(KeyEvent arg0)
+			{
+				do_argument_keyPressed(arg0);
+			}
+		});
+		argument.setBounds(10, 10, 362, 21);
+
+		tblPacijenti = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		tblPacijenti.setBounds(10, 35, 362, 225);
+		tblPacijenti.setHeaderVisible(true);
+		tblPacijenti.setLinesVisible(true);
+
+		TableColumn tblclmnIme = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnIme.setWidth(65);
+		tblclmnIme.setText("Ime");
+
+		TableColumn tblclmnVlasnik = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnVlasnik.setWidth(62);
+		tblclmnVlasnik.setText("Vlasnik");
+
+		TableColumn tblclmnVrsta = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnVrsta.setWidth(63);
+		tblclmnVrsta.setText("Vrsta");
+
+		TableColumn tblclmnGodite = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnGodite.setWidth(82);
+		tblclmnGodite.setText("Godi\u0161te");
+
+		TableColumn tblclmnNewColumn = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnNewColumn.setWidth(84);
+		tblclmnNewColumn.setText("Dat. prijema");
+
+		TableColumn tblclmnNewColumn_1 = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnNewColumn_1.setWidth(-7);
+		tblclmnNewColumn_1.setText("New Column");
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Pretraga pacijenata");
+		setSize(385, 296);
+
+	}
+
+	protected void do_argument_keyPressed(KeyEvent arg0)
+	{
+		tblPacijenti.removeAll();
+		List<Pacijent> result = Pretraga.PretragaPacijenata(argument.getText());
+		for (Pacijent p : result)
+		{
+
+			final TableItem tblI = new TableItem(tblPacijenti, SWT.None);
+			tblI.setText(0, p.getIme());
+			tblI.setText(1, p.getVlasnik().getIme());
+			tblI.setText(2, p.getVrsta().getImeVrste());
+			DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+			Calendar cal2 = Calendar.getInstance();
+			tblI.setText(3, dateFormat2.format(p.getGodiste()));
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+			Calendar cal = Calendar.getInstance();
+			tblI.setText(4, dateFormat.format(p.getDatumPrijema()));
+		}
+	}
+}

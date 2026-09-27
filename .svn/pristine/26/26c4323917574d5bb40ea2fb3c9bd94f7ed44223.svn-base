@@ -1,0 +1,94 @@
+package model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+@Entity
+public class Administrator
+{
+	@Id
+	@GeneratedValue
+	private int AdministratorID;
+
+	@Column(nullable = false)
+	private String Ime;
+
+	@Column(nullable = false)
+	private String Prezime;
+
+	@ManyToOne
+	@JoinColumn(nullable = false)
+	private StrucneSpreme StrucnaSprema;
+
+	@JoinColumn(nullable = false)
+	@ManyToOne
+	private KorisnickiNalog username;
+
+	@ManyToOne
+	private Gradovi _Grad;
+
+	public Gradovi get_Grad()
+	{
+		return _Grad;
+	}
+
+	public int getAdministratorID()
+	{
+		return AdministratorID;
+	}
+
+	public String getIme()
+	{
+		return Ime;
+	}
+
+	public KorisnickiNalog getNalog()
+	{
+		return username;
+	}
+
+	public String getPrezime()
+	{
+		return Prezime;
+	}
+
+	public StrucneSpreme getStrucnaSprema()
+	{
+		return StrucnaSprema;
+	}
+
+	public void set_Grad(Gradovi _Grad)
+	{
+		this._Grad = _Grad;
+	}
+
+	public void setAdministratorID(int administratorID)
+	{
+		AdministratorID = administratorID;
+	}
+
+	public void setIme(String ime)
+	{
+		Ime = ime;
+	}
+
+	public void setNalog(KorisnickiNalog Nalog)
+	{
+		username = Nalog;
+	}
+
+	public void setPrezime(String prezime)
+	{
+		Prezime = prezime;
+	}
+
+	public void setStrucnaSprema(StrucneSpreme strucnaSprema)
+	{
+		StrucnaSprema = strucnaSprema;
+	}
+
+}

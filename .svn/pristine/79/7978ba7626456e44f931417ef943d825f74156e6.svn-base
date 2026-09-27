@@ -1,0 +1,150 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+import helper.MojKalendar;
+
+import java.util.List;
+
+import model.Racuni;
+import model.Uplata;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmDodajUplatu extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajUplatu shell = new frmDodajUplatu(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtIznos;
+
+	public frmDodajUplatu(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.TITLE);
+
+		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setBounds(10, 77, 55, 15);
+		lblNewLabel.setText("Iznos :");
+
+		Label lblDatum = new Label(this, SWT.NONE);
+		lblDatum.setBounds(10, 114, 55, 15);
+		lblDatum.setText("Datum :");
+
+		Label lblRaun = new Label(this, SWT.NONE);
+		lblRaun.setBounds(10, 142, 55, 15);
+		lblRaun.setText("Racun :");
+
+		txtIznos = new Text(this, SWT.BORDER);
+		txtIznos.setBounds(120, 74, 145, 21);
+
+		final MojKalendar dtDatum = new MojKalendar(this, SWT.BORDER);
+		dtDatum.setBounds(120, 105, 145, 24);
+
+		final MojComboBox cmbRacun = new MojComboBox(this, SWT.READ_ONLY);
+		cmbRacun.setBounds(120, 139, 145, 23);
+
+		Button btnSauvaj = new Button(this, SWT.NONE);
+		btnSauvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Uplata u = new Uplata();
+				if (txtIznos.getText() == "" || cmbRacun.getText() == "")
+				{
+					MessageDialog.openError(null, "Greska", "Sva polja su obavezna");
+					return;
+				} else
+				{
+					u.setIznos(txtIznos.getText());
+					u.setDatum(dtDatum.getDatum());
+					Racuni racun = cmbRacun.uzmiOznacenuStavku(Racuni.class);
+					u.setRacuni(racun);
+					Dodavanje.DodajUplatu(u);
+					MessageDialog.openInformation(null, "Informacija", "Uplata uspjesno dodata!");
+					close();
+				}
+			}
+		});
+		btnSauvaj.setBounds(85, 186, 75, 25);
+		btnSauvaj.setText("Sa\u010Duvaj");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+
+		});
+		btnOdustani.setBounds(190, 186, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		Label label = new Label(this, SWT.NONE);
+		label.setImage(SWTResourceManager.getImage(frmDodajUplatu.class, "/ui/slike/1389306817_Add-Male-User.png"));
+		label.setBounds(10, 10, 55, 58);
+
+		Label lblDodajUplatu = new Label(this, SWT.NONE);
+		lblDodajUplatu.setText("DODAJ UPLATU");
+		lblDodajUplatu.setFont(SWTResourceManager.getFont("Arial", 14, SWT.BOLD));
+		lblDodajUplatu.setBounds(111, 28, 154, 38);
+		createContents();
+		List<Racuni> lista = DAO.getAll(Racuni.class);
+		for (Racuni r : lista)
+		{
+			cmbRacun.dodajStavku(r, r.getNaziv());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Dodaj uplatu");
+		setSize(279, 262);
+	}
+
+}

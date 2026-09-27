@@ -1,0 +1,176 @@
+package ui;
+
+import helper.Konekcija;
+import helper.MojKalendar;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import model.Racuni;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmDodajRacun extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajRacun shell = new frmDodajRacun(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtNaziv;
+	private final Text txtIznos;
+	private final MojKalendar dtDatum;
+
+	public frmDodajRacun(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmDodajRacun.class, "/ui/slike/Button-Add-icon.png"));
+
+		Label label = new Label(this, SWT.NONE);
+		label.setImage(SWTResourceManager.getImage(frmDodajRacun.class, "/ui/slike/dodavanjeLijeka.png"));
+		label.setBounds(20, 10, 58, 84);
+
+		Label lblNaziv = new Label(this, SWT.NONE);
+		lblNaziv.setBounds(84, 27, 43, 15);
+		lblNaziv.setText("Naziv:");
+
+		txtNaziv = new Text(this, SWT.BORDER);
+		txtNaziv.setBounds(133, 27, 151, 21);
+
+		Label lblIznos = new Label(this, SWT.NONE);
+		lblIznos.setBounds(84, 67, 43, 15);
+		lblIznos.setText("Iznos:");
+
+		txtIznos = new Text(this, SWT.BORDER);
+		txtIznos.setBounds(133, 67, 151, 21);
+
+		dtDatum = new MojKalendar(this, SWT.BORDER);
+		dtDatum.setBounds(133, 106, 80, 24);
+
+		Label lblDatum = new Label(this, SWT.NONE);
+		lblDatum.setBounds(84, 106, 43, 15);
+		lblDatum.setText("Datum:");
+
+		Button btnSauvaj = new Button(this, SWT.NONE);
+		btnSauvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnSauvaj_widgetSelected(arg0);
+			}
+		});
+		btnSauvaj.setBounds(84, 156, 75, 25);
+		btnSauvaj.setText("Sa\u010Duvaj");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setBounds(209, 156, 75, 25);
+		btnOdustani.setText("Odustani");
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Dodavanje ra\u010Duna");
+		setSize(304, 225);
+
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		this.close();
+	}
+
+	protected void do_btnSauvaj_widgetSelected(SelectionEvent arg0)
+	{
+		String string = txtIznos.getText();
+		char[] chars = new char[string.length()];
+		string.getChars(0, chars.length, chars, 0);
+		for (int i = 0; i < chars.length; i++)
+		{
+			if (!('0' <= chars[i] && chars[i] <= '9'))
+			{
+				MessageDialog.openError(null, "Greška", "U polje količina se mogu unijeti samo brojčane vrijednosti!");
+				return;
+			}
+		}
+		Racuni r = new Racuni();
+		if (txtNaziv.getText() == "" || txtIznos.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos!");
+			return;
+		}
+
+		r.setNaziv(txtNaziv.getText());
+		r.setDatum(dtDatum.getDatum());
+		r.setIznosZaPlatiti(txtIznos.getText());
+
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+		TypedQuery<Racuni> q = em.createQuery("select k from Racuni k  where k.naziv = ?", Racuni.class);
+		q.setParameter(1, txtNaziv.getText());
+		List<Racuni> lista = q.getResultList();
+		em.close();
+
+		if (lista.size() == 0)
+		{
+			Dodavanje.DodajRacun(r);
+			MessageDialog.openInformation(null, "Informacija", "Račun uspješno dodat!");
+			close();
+		} else
+		{
+			MessageDialog.openError(null, "Greška", "Taj račun je već unešen u bazu podataka!");
+			return;
+		}
+	}
+}

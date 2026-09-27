@@ -1,0 +1,92 @@
+package ui;
+
+import helper.DAO;
+import model.Dijagnoze;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmPregledDijagnoza extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmPregledDijagnoza shell = new frmPregledDijagnoza(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Table tblDijagnoze;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmPregledDijagnoza(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmPregledDijagnoza.class, "/ui/slike/search-b-icon.png"));
+		setLayout(null);
+
+		tblDijagnoze = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		tblDijagnoze.setBounds(10, 10, 204, 240);
+		tblDijagnoze.setHeaderVisible(true);
+		tblDijagnoze.setLinesVisible(true);
+
+		TableColumn tblclmnNazivDijagnoze = new TableColumn(tblDijagnoze, SWT.NONE);
+		tblclmnNazivDijagnoze.setWidth(100);
+		tblclmnNazivDijagnoze.setText("Naziv dijagnoze");
+
+		TableColumn tblclmnSifraDijagnoze = new TableColumn(tblDijagnoze, SWT.NONE);
+		tblclmnSifraDijagnoze.setWidth(100);
+		tblclmnSifraDijagnoze.setText("Sifra dijagnoze");
+		createContents();
+		for (Dijagnoze dijagnoze : DAO.getAll(Dijagnoze.class))
+		{
+			final TableItem tblI = new TableItem(tblDijagnoze, SWT.None);
+			tblI.setText(0, dijagnoze.getNaziv_bolesti());
+			tblI.setText(1, dijagnoze.getSifra_dijagnoze());
+		}
+
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Pregled dijagnoza");
+		setSize(232, 286);
+
+	}
+}

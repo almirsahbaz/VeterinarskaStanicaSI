@@ -1,0 +1,112 @@
+package ui;
+
+import java.util.List;
+
+import model.Terapija;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Pretraga;
+
+public class frmPretragaTerapije extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmPretragaTerapije shell = new frmPretragaTerapije(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtargument;
+
+	private final Table tblterapija;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmPretragaTerapije(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmPretragaTerapije.class, "/ui/slike/search-b-icon.png"));
+
+		txtargument = new Text(this, SWT.BORDER);
+		txtargument.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyPressed(KeyEvent arg0)
+			{
+				tblterapija.removeAll();
+				List<Terapija> lista = Pretraga.Pretragaterapija(txtargument.getText());
+				for (Terapija terapija : lista)
+				{
+					TableItem tableItem = new TableItem(tblterapija, SWT.NONE);
+					tableItem.setText(0, terapija.getVrsta());
+					tableItem.setText(1, terapija.getDatumTerapije().toString());
+
+				}
+			}
+		});
+		txtargument.setBounds(10, 30, 274, 21);
+
+		tblterapija = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		tblterapija.setBounds(10, 67, 274, 173);
+		tblterapija.setHeaderVisible(true);
+		tblterapija.setLinesVisible(true);
+
+		TableColumn tblclmnNewColumn = new TableColumn(tblterapija, SWT.NONE);
+		tblclmnNewColumn.setWidth(131);
+		tblclmnNewColumn.setText("Vrsta");
+
+		TableColumn tblclmnDatum = new TableColumn(tblterapija, SWT.NONE);
+		tblclmnDatum.setWidth(132);
+		tblclmnDatum.setText("Datum");
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Pretraga terapija");
+		setSize(300, 300);
+
+	}
+
+}

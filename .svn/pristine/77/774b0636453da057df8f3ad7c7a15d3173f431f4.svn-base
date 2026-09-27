@@ -1,0 +1,133 @@
+package ui;
+
+import helper.MojKalendar;
+import model.Usluge;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmDodajUslugu extends Shell
+{
+
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajUslugu shell = new frmDodajUslugu(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtNaziv;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmDodajUslugu(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.TITLE);
+
+		Label lblNaziv = new Label(this, SWT.NONE);
+		lblNaziv.setBounds(10, 78, 55, 15);
+		lblNaziv.setText("Naziv :");
+
+		txtNaziv = new Text(this, SWT.BORDER);
+		txtNaziv.setBounds(90, 78, 180, 21);
+
+		Label lblDatum = new Label(this, SWT.NONE);
+		lblDatum.setBounds(10, 123, 55, 15);
+		lblDatum.setText("Datum :");
+
+		final MojKalendar dtDatum = new MojKalendar(this, SWT.BORDER);
+		dtDatum.setBounds(90, 123, 119, 21);
+
+		Button btnSauvaj = new Button(this, SWT.NONE);
+		btnSauvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Usluge u = new Usluge();
+				u.setNaziv(txtNaziv.getText());
+				u.setDatumUsluge(dtDatum.getDatum());
+
+				if (txtNaziv.getText() == "")
+				{
+					MessageDialog.openError(null, "Greska", "Polje naziv ne smije biti prazno");
+					return;
+
+				} else
+				{
+					Dodavanje.DodajUslugu(u);
+					MessageDialog.openInformation(null, "Informacija", "Upsjesno dodano");
+					close();
+				}
+
+			}
+		});
+		btnSauvaj.setBounds(90, 162, 75, 25);
+		btnSauvaj.setText("Sa\u010Duvaj");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(195, 162, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		Label label = new Label(this, SWT.NONE);
+		label.setImage(SWTResourceManager.getImage(frmDodajUslugu.class, "/ui/slike/1389306817_Add-Male-User.png"));
+		label.setBounds(10, 10, 55, 58);
+
+		Label lblDodajUslugu = new Label(this, SWT.NONE);
+		lblDodajUslugu.setText("DODAJ USLUGU");
+		lblDodajUslugu.setFont(SWTResourceManager.getFont("Arial", 14, SWT.BOLD));
+		lblDodajUslugu.setBounds(90, 34, 168, 38);
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Dodaj Uslugu");
+		setSize(287, 236);
+
+	}
+}

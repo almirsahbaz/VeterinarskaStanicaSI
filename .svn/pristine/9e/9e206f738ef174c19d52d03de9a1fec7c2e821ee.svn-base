@@ -1,0 +1,78 @@
+package model;
+
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+@Entity
+public class Lijekovi
+{
+	@Id
+	@GeneratedValue
+	private int lijekID;
+
+	private String Naziv;
+
+	private String Vrsta;
+
+	private Date Rok_trajanja;
+
+	@JoinColumn(nullable = false)
+	@ManyToOne
+	public Tehnicko_osoblje tehnicko_osoblje;
+
+	public int getLijekID()
+	{
+		return lijekID;
+	}
+
+	public String getNaziv()
+	{
+		return Naziv;
+	}
+
+	public Date getRok_trajanja()
+	{
+		return Rok_trajanja;
+	}
+
+	public Tehnicko_osoblje getTehnicko_osoblje()
+	{
+		return tehnicko_osoblje;
+	}
+
+	public String getVrsta()
+	{
+		return Vrsta;
+	}
+
+	public void setLijekID(int lijekID)
+	{
+		this.lijekID = lijekID;
+	}
+
+	public void setNaziv(String naziv)
+	{
+		Naziv = naziv;
+	}
+
+	public void setRok_trajanja(Date rok_trajanja)
+	{
+		Rok_trajanja = rok_trajanja;
+	}
+
+	public void setTehnicko_osoblje(Tehnicko_osoblje tehnicko_osoblje)
+	{
+		this.tehnicko_osoblje = tehnicko_osoblje;
+	}
+
+	public void setVrsta(String vrsta)
+	{
+		Vrsta = vrsta;
+	}
+
+}

@@ -1,0 +1,170 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import model.Lijekovi;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmIzmjeniLijek extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmIzmjeniLijek shell = new frmIzmjeniLijek(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtVrsta;
+
+	private final Text txtRokTrajanja;
+
+	private final MojComboBox cmbNazivLijeka;
+
+	public frmIzmjeniLijek(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmIzmjeniLijek.class, "/ui/slike/EditThumb.png"));
+		setText("Izmjena lijeka");
+
+		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setImage(SWTResourceManager.getImage(frmIzmjeniLijek.class, "/ui/slike/Editing.png"));
+		lblNewLabel.setBounds(10, 10, 48, 67);
+
+		Label lblNaziv = new Label(this, SWT.NONE);
+		lblNaziv.setBounds(79, 24, 48, 15);
+		lblNaziv.setText("Naziv: ");
+
+		cmbNazivLijeka = new MojComboBox(this, SWT.READ_ONLY);
+		cmbNazivLijeka.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_cmbNazivLijeka_widgetSelected(arg0);
+			}
+		});
+		cmbNazivLijeka.setBounds(149, 21, 156, 23);
+
+		txtVrsta = new Text(this, SWT.BORDER);
+		txtVrsta.setBounds(149, 70, 156, 21);
+
+		Label lblVrsta = new Label(this, SWT.NONE);
+		lblVrsta.setBounds(79, 70, 55, 15);
+		lblVrsta.setText("Vrsta:");
+
+		Label lblRokTrajanja = new Label(this, SWT.NONE);
+		lblRokTrajanja.setBounds(79, 114, 65, 15);
+		lblRokTrajanja.setText("Rok trajanja:");
+
+		txtRokTrajanja = new Text(this, SWT.BORDER);
+		txtRokTrajanja.setBounds(149, 114, 156, 21);
+
+		Button btnSpasi = new Button(this, SWT.NONE);
+		btnSpasi.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnSpasi_widgetSelected(arg0);
+			}
+		});
+		btnSpasi.setBounds(149, 162, 75, 25);
+		btnSpasi.setText("Spasi");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setBounds(230, 162, 75, 25);
+		btnOdustani.setText("Odustani");
+		createContents();
+		List<Lijekovi> lista = DAO.getAll(Lijekovi.class);
+		for (Lijekovi l : lista)
+		{
+			cmbNazivLijeka.dodajStavku(l, l.getNaziv());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setSize(328, 233);
+		txtRokTrajanja.setEditable(false);
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		this.close();
+	}
+
+	protected void do_btnSpasi_widgetSelected(SelectionEvent arg0)
+	{
+		Lijekovi lijek = cmbNazivLijeka.uzmiOznacenuStavku(Lijekovi.class);
+		if (cmbNazivLijeka.getText() == "" || txtVrsta.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos!");
+			return;
+		}
+		lijek.setVrsta(txtVrsta.getText());
+		DAO.update(lijek);
+		MessageDialog.openInformation(null, "Informacija", "Lijek uspješno izmjenjen!");
+		this.close();
+	}
+
+	protected void do_cmbNazivLijeka_widgetSelected(SelectionEvent arg0)
+	{
+		Lijekovi lijek = cmbNazivLijeka.uzmiOznacenuStavku(Lijekovi.class);
+		txtVrsta.setText(lijek.getVrsta());
+		Calendar cal = Calendar.getInstance();
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		txtRokTrajanja.setText(dateFormat.format(lijek.getRok_trajanja()));
+	}
+}

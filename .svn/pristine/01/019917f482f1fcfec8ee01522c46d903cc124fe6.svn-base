@@ -1,0 +1,421 @@
+package ui;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmGlavnaAdministrator extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void otvori()
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmGlavnaAdministrator shell = new frmGlavnaAdministrator(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblTrenutnoLogiraniKorisnik;
+	private final MenuItem mntmUpravljanjeKorisnicima;
+	private final Menu menu_1;
+
+	private final MenuItem mntmKreirajKorisnikiNalog;
+	private final MenuItem mntmPretragaPoImenu;
+	private final MenuItem mntmObriiKorisnika;
+	private final Menu menu_7;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmGlavnaAdministrator(Display display)
+	{
+		super(display, SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/admin-icon.png"));
+		setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+
+		lblTrenutnoLogiraniKorisnik = new Label(this, SWT.NONE);
+		lblTrenutnoLogiraniKorisnik.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+		lblTrenutnoLogiraniKorisnik.setBounds(10, 246, 148, 15);
+		lblTrenutnoLogiraniKorisnik.setText("Dobrodo\u0161li:");
+		lblTrenutnoLogiraniKorisnik.setText(lblTrenutnoLogiraniKorisnik.getText() + " " + Sesija.logiraniKorisnik.getUsername());
+
+		Menu menu = new Menu(this, SWT.BAR);
+		setMenuBar(menu);
+
+		MenuItem mntmKorisnik = new MenuItem(menu, SWT.CASCADE);
+		mntmKorisnik.setText("Korisnik");
+
+		Menu menu_4 = new Menu(mntmKorisnik);
+		mntmKorisnik.setMenu(menu_4);
+
+		MenuItem mntmLogOut = new MenuItem(menu_4, SWT.NONE);
+		mntmLogOut.addSelectionListener(new SelectionAdapter()
+		{
+			@SuppressWarnings("static-access")
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				_Starter login = new _Starter();
+				close();
+				login.main(null);
+
+			}
+		});
+		mntmLogOut.setText("Log out");
+
+		new MenuItem(menu_4, SWT.SEPARATOR);
+
+		MenuItem mntmExit = new MenuItem(menu_4, SWT.NONE);
+		mntmExit.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		mntmExit.setText("Exit");
+
+		new MenuItem(menu_4, SWT.SEPARATOR);
+
+		mntmUpravljanjeKorisnicima = new MenuItem(menu, SWT.CASCADE);
+		mntmUpravljanjeKorisnicima.setText("Upravljanje korisnicima");
+
+		menu_1 = new Menu(mntmUpravljanjeKorisnicima);
+		mntmUpravljanjeKorisnicima.setMenu(menu_1);
+
+		mntmKreirajKorisnikiNalog = new MenuItem(menu_1, SWT.NONE);
+		mntmKreirajKorisnikiNalog.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmDodajKorisnickiNalog frm = new frmDodajKorisnickiNalog(null);
+				frm.open();
+			}
+		});
+		mntmKreirajKorisnikiNalog.setText("Kreiraj korisni\u010Dki nalog");
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmObriiKorisnikiNalog = new MenuItem(menu_1, SWT.NONE);
+		mntmObriiKorisnikiNalog.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmAktivacijaNaloga frm = new frmAktivacijaNaloga(null);
+				frm.open();
+			}
+		});
+		mntmObriiKorisnikiNalog.setText("Aktivacija/Deaktivacija korisni\u010Dkih naloga");
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmDodajNovogKorisnika = new MenuItem(menu_1, SWT.CASCADE);
+		mntmDodajNovogKorisnika.setText("Dodaj novog korisnika");
+
+		Menu menu_2 = new Menu(mntmDodajNovogKorisnika);
+		mntmDodajNovogKorisnika.setMenu(menu_2);
+
+		MenuItem mntmDodajNovogAdministratora = new MenuItem(menu_2, SWT.NONE);
+		mntmDodajNovogAdministratora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmDodajAdministratora frm = new frmDodajAdministratora(null);
+				frm.open();
+			}
+		});
+		mntmDodajNovogAdministratora.setText("Dodaj novog administratora");
+
+		new MenuItem(menu_2, SWT.SEPARATOR);
+
+		MenuItem mntmDodajNovogDoktora = new MenuItem(menu_2, SWT.NONE);
+		mntmDodajNovogDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmDodajDoktora frm = new frmDodajDoktora(null);
+				frm.open();
+			}
+		});
+		mntmDodajNovogDoktora.setText("Dodaj novog doktora");
+
+		new MenuItem(menu_2, SWT.SEPARATOR);
+
+		MenuItem mntmDodajNovoTehniko = new MenuItem(menu_2, SWT.NONE);
+		mntmDodajNovoTehniko.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmDodajTehnickoOsoblje frm = new frmDodajTehnickoOsoblje(null);
+				frm.open();
+			}
+		});
+		mntmDodajNovoTehniko.setText("Dodaj novo tehni\u010Dko osoblje");
+
+		new MenuItem(menu_2, SWT.SEPARATOR);
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		mntmObriiKorisnika = new MenuItem(menu_1, SWT.CASCADE);
+		mntmObriiKorisnika.setText("Obri\u0161i korisnika");
+
+		menu_7 = new Menu(mntmObriiKorisnika);
+		mntmObriiKorisnika.setMenu(menu_7);
+
+		MenuItem mntmObriiAdministratora = new MenuItem(menu_7, SWT.NONE);
+		mntmObriiAdministratora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmObrisiAdministratora frm = new frmObrisiAdministratora(null);
+				frm.open();
+			}
+		});
+		mntmObriiAdministratora.setText("Obri\u0161i administratora");
+
+		new MenuItem(menu_7, SWT.SEPARATOR);
+
+		MenuItem mntmObriiDoktora = new MenuItem(menu_7, SWT.NONE);
+		mntmObriiDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmObrisiDoktora frm = new frmObrisiDoktora(null);
+				frm.open();
+			}
+		});
+		mntmObriiDoktora.setText("Obri\u0161i doktora");
+
+		new MenuItem(menu_7, SWT.SEPARATOR);
+
+		MenuItem mntmObriiTehnikoOsoblje = new MenuItem(menu_7, SWT.NONE);
+		mntmObriiTehnikoOsoblje.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmObrisiTehnickoOsoblje frm = new frmObrisiTehnickoOsoblje(null);
+				frm.open();
+			}
+		});
+		mntmObriiTehnikoOsoblje.setText("Obri\u0161i tehni\u010Dko osoblje");
+
+		new MenuItem(menu_7, SWT.SEPARATOR);
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmPregledKorisnika = new MenuItem(menu_1, SWT.CASCADE);
+		mntmPregledKorisnika.setText("Pregled korisnika");
+
+		Menu menu_5 = new Menu(mntmPregledKorisnika);
+		mntmPregledKorisnika.setMenu(menu_5);
+
+		MenuItem mntmPregledAdministratora = new MenuItem(menu_5, SWT.NONE);
+		mntmPregledAdministratora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPregledAdministratora frm = new frmPregledAdministratora(null);
+				frm.open();
+			}
+		});
+		mntmPregledAdministratora.setText("Pregled administratora");
+
+		new MenuItem(menu_5, SWT.SEPARATOR);
+
+		MenuItem mntmPregledDoktora = new MenuItem(menu_5, SWT.NONE);
+		mntmPregledDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPregledDoktora frm = new frmPregledDoktora(null);
+				frm.open();
+			}
+		});
+		mntmPregledDoktora.setText("Pregled doktora");
+
+		new MenuItem(menu_5, SWT.SEPARATOR);
+
+		MenuItem mntmPregledTehnikogOsoblja = new MenuItem(menu_5, SWT.NONE);
+		mntmPregledTehnikogOsoblja.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPregledTehnickogOsoblja frm = new frmPregledTehnickogOsoblja(null);
+				frm.open();
+			}
+		});
+
+		mntmPregledTehnikogOsoblja.setText("Pregled tehni\u010Dkog osoblja");
+
+		new MenuItem(menu_5, SWT.SEPARATOR);
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmPretragaKorisnika = new MenuItem(menu_1, SWT.CASCADE);
+		mntmPretragaKorisnika.setText("Pretraga korisnika");
+
+		Menu menu_3 = new Menu(mntmPretragaKorisnika);
+		mntmPretragaKorisnika.setMenu(menu_3);
+
+		mntmPretragaPoImenu = new MenuItem(menu_3, SWT.NONE);
+		mntmPretragaPoImenu.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPretragaAdmin frm = new frmPretragaAdmin(null);
+				frm.open();
+			}
+		});
+		mntmPretragaPoImenu.setText("Pretraga administratora");
+
+		new MenuItem(menu_3, SWT.SEPARATOR);
+
+		MenuItem mntmPretragaDoktora = new MenuItem(menu_3, SWT.NONE);
+		mntmPretragaDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPretragaDoktora frm = new frmPretragaDoktora(null);
+				frm.open();
+			}
+		});
+		mntmPretragaDoktora.setText("Pretraga doktora");
+
+		new MenuItem(menu_3, SWT.SEPARATOR);
+
+		MenuItem mntmPretragaTehnikogOsobolja = new MenuItem(menu_3, SWT.NONE);
+		mntmPretragaTehnikogOsobolja.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPretragaTehnickogOsoblja frm = new frmPretragaTehnickogOsoblja(null);
+				frm.open();
+			}
+		});
+		mntmPretragaTehnikogOsobolja.setText("Pretraga tehni\u010Dkog osoblja");
+
+		new MenuItem(menu_3, SWT.SEPARATOR);
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmUnosNovihPodataka = new MenuItem(menu, SWT.CASCADE);
+		mntmUnosNovihPodataka.setText("Unos novih podataka");
+
+		Menu menu_6 = new Menu(mntmUnosNovihPodataka);
+		mntmUnosNovihPodataka.setMenu(menu_6);
+
+		MenuItem mntmNewItem = new MenuItem(menu_6, SWT.NONE);
+		mntmNewItem.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmGradovi frm = new frmGradovi(null);
+				frm.open();
+			}
+		});
+		mntmNewItem.setText("Unos gradova");
+
+		new MenuItem(menu_6, SWT.SEPARATOR);
+
+		MenuItem mntmUnosOdjela = new MenuItem(menu_6, SWT.NONE);
+		mntmUnosOdjela.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmOdjeli frm = new frmOdjeli(null);
+				frm.open();
+			}
+		});
+		mntmUnosOdjela.setText("Unos odjela");
+
+		new MenuItem(menu_6, SWT.SEPARATOR);
+
+		MenuItem mntmUnosStrunihSprema = new MenuItem(menu_6, SWT.NONE);
+		mntmUnosStrunihSprema.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmStrucneSpreme frm = new frmStrucneSpreme(null);
+				frm.open();
+			}
+		});
+		mntmUnosStrunihSprema.setText("Unos stru\u010Dnih sprema");
+
+		new MenuItem(menu_6, SWT.SEPARATOR);
+
+		MenuItem mntmUnosZvanja = new MenuItem(menu_6, SWT.NONE);
+		mntmUnosZvanja.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmZvanja frm = new frmZvanja(null);
+				frm.open();
+			}
+		});
+		mntmUnosZvanja.setText("Unos zvanja");
+
+		new MenuItem(menu_6, SWT.SEPARATOR);
+
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Administrator::Glavna forma");
+		setSize(449, 319);
+
+	}
+}

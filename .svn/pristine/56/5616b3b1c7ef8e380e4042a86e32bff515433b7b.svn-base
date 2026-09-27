@@ -1,0 +1,174 @@
+package ui;
+
+import java.util.List;
+
+import model.Administrator;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Pretraga;
+
+public class frmPretragaAdmin extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmPretragaAdmin shell = new frmPretragaAdmin(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblIme;
+	private final Label lblPrezime;
+	private final Text txtIme;
+	private final Text txtPrezime;
+	private final Table tblKorisnici;
+	private final TableColumn tblclmnUsername;
+	private final TableColumn tblclmnIme;
+	private final TableColumn tblclmnPrezime;
+
+	private final TableColumn tblclmnGrad;
+	private final TableColumn tblclmnStrunaSprema;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmPretragaAdmin(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmPretragaAdmin.class, "/ui/slike/search-b-icon.png"));
+
+		lblIme = new Label(this, SWT.NONE);
+		lblIme.setBounds(20, 10, 55, 15);
+		lblIme.setText("Ime:");
+
+		lblPrezime = new Label(this, SWT.NONE);
+		lblPrezime.setBounds(20, 41, 55, 15);
+		lblPrezime.setText("Prezime:");
+
+		txtIme = new Text(this, SWT.BORDER);
+		txtIme.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyPressed(KeyEvent arg0)
+			{
+				do_txtIme_keyPressed(arg0);
+			}
+		});
+
+		txtIme.setBounds(81, 7, 429, 21);
+
+		txtPrezime = new Text(this, SWT.BORDER);
+		txtPrezime.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyPressed(KeyEvent arg0)
+			{
+				do_txtPrezime_keyPressed(arg0);
+			}
+		});
+		txtPrezime.setBounds(81, 38, 429, 21);
+
+		tblKorisnici = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		tblKorisnici.setBounds(20, 81, 490, 171);
+		tblKorisnici.setHeaderVisible(true);
+		tblKorisnici.setLinesVisible(true);
+
+		tblclmnUsername = new TableColumn(tblKorisnici, SWT.NONE);
+		tblclmnUsername.setWidth(100);
+		tblclmnUsername.setText("Username:");
+
+		tblclmnIme = new TableColumn(tblKorisnici, SWT.NONE);
+		tblclmnIme.setWidth(100);
+		tblclmnIme.setText("Ime:");
+
+		tblclmnPrezime = new TableColumn(tblKorisnici, SWT.NONE);
+		tblclmnPrezime.setWidth(100);
+		tblclmnPrezime.setText("Prezime:");
+
+		tblclmnStrunaSprema = new TableColumn(tblKorisnici, SWT.NONE);
+		tblclmnStrunaSprema.setWidth(100);
+		tblclmnStrunaSprema.setText("Stru\u010Dna sprema");
+
+		tblclmnGrad = new TableColumn(tblKorisnici, SWT.NONE);
+		tblclmnGrad.setWidth(100);
+		tblclmnGrad.setText("Grad:");
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Pretraga administratora");
+		setSize(526, 300);
+
+	}
+
+	protected void do_txtIme_keyPressed(KeyEvent arg0)
+	{
+		tblKorisnici.removeAll();
+		List<Administrator> result = Pretraga.PretragaAdministratoraI(txtIme.getText());
+		for (Administrator a : result)
+		{
+			final TableItem tblI = new TableItem(tblKorisnici, SWT.None);
+			tblI.setText(0, a.getNalog().getUsername());
+			tblI.setText(1, a.getIme());
+			tblI.setText(2, a.getPrezime());
+			tblI.setText(3, a.getStrucnaSprema().getNaziv());
+			tblI.setText(4, a.get_Grad().getNaziv());
+		}
+	}
+
+	protected void do_txtPrezime_keyPressed(KeyEvent arg0)
+	{
+		tblKorisnici.removeAll();
+		List<Administrator> result = Pretraga.PretragaAdministratoraP(txtPrezime.getText());
+		for (Administrator a : result)
+		{
+			final TableItem tblI = new TableItem(tblKorisnici, SWT.None);
+			tblI.setText(0, a.getNalog().getUsername());
+			tblI.setText(1, a.getIme());
+			tblI.setText(2, a.getPrezime());
+			tblI.setText(3, a.getStrucnaSprema().getNaziv());
+			tblI.setText(4, a.get_Grad().getNaziv());
+		}
+	}
+}

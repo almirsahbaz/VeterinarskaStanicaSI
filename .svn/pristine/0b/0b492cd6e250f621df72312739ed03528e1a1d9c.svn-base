@@ -1,0 +1,138 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+import helper.MojKalendar;
+
+import java.util.List;
+
+import model.Lijekovi;
+import model.Tehnicko_osoblje;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmDodajLijek extends Shell
+{
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajLijek shell = new frmDodajLijek(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtNaziv;
+	private final MojComboBox cmbOsoblje;
+	private final Text txtVrsta;
+
+	public frmDodajLijek(Display display)
+	{
+		super(display, SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmDodajLijek.class, "/ui/slike/Button-Add-icon.png"));
+
+		Label lblNaziv = new Label(this, SWT.NONE);
+		lblNaziv.setBounds(20, 20, 55, 18);
+		lblNaziv.setText("Naziv : ");
+
+		txtNaziv = new Text(this, SWT.BORDER);
+		txtNaziv.setBounds(95, 17, 123, 21);
+
+		txtVrsta = new Text(this, SWT.BORDER);
+		txtVrsta.setBounds(95, 48, 123, 21);
+
+		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setBounds(20, 51, 47, 15);
+		lblNewLabel.setText("Vrsta : ");
+
+		Label lblTehnikoOsoblje = new Label(this, SWT.NONE);
+		lblTehnikoOsoblje.setBounds(20, 87, 68, 15);
+		lblTehnikoOsoblje.setText("Osoblje : ");
+
+		cmbOsoblje = new MojComboBox(this, SWT.READ_ONLY);
+		cmbOsoblje.setBounds(95, 84, 123, 23);
+
+		Label lblRokTrajanja = new Label(this, SWT.NONE);
+		lblRokTrajanja.setBounds(20, 127, 68, 15);
+		lblRokTrajanja.setText("Rok trajanja: ");
+
+		final MojKalendar dtRokTrajanja = new MojKalendar(this, SWT.BORDER);
+		dtRokTrajanja.setBounds(95, 127, 80, 24);
+
+		Button btnSauvaj = new Button(this, SWT.NONE);
+		btnSauvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Lijekovi lijek = new Lijekovi();
+				lijek.setNaziv(txtNaziv.getText());
+				lijek.setVrsta(txtVrsta.getText());
+				Tehnicko_osoblje idOsoblje = cmbOsoblje.uzmiOznacenuStavku(Tehnicko_osoblje.class);
+				lijek.setTehnicko_osoblje(idOsoblje);
+				lijek.setRok_trajanja(dtRokTrajanja.getDatum());
+				if (txtNaziv.getText() == "" || txtVrsta.getText() == "" || cmbOsoblje.getText() == "")
+				{
+					MessageDialog.openError(null, "Greška", "Sva polja su obavezna !");
+					return;
+				}
+				Dodavanje.DodajLijek(lijek);
+				MessageDialog.openInformation(null, "Informacija", "Lijek uspješno dodat!");
+			}
+		});
+		btnSauvaj.setBounds(20, 163, 86, 25);
+		btnSauvaj.setText("Sa\u010Duvaj");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(132, 163, 86, 25);
+		btnOdustani.setText("Odustani");
+		createContents();
+		List<Tehnicko_osoblje> lista = DAO.getAll(Tehnicko_osoblje.class);
+		for (Tehnicko_osoblje t : lista)
+		{
+			cmbOsoblje.dodajStavku(t, t.getVrsta_posla());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+	}
+
+	protected void createContents()
+	{
+		setText("Dodavanje lijeka");
+		setSize(243, 234);
+	}
+}

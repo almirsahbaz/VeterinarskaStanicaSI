@@ -1,0 +1,122 @@
+package ui;
+
+import model.KorisnickiNalog;
+import model.KorisnickiNalog.TipKorisnika;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.LoginServis;
+
+public class frmLogin extends Shell
+{
+	private final Text txtUsername;
+	private final Text txtLozinka;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmLogin(Display display)
+	{
+		super(display, SWT.TITLE);
+
+		Label lblKorisnikoIme = new Label(this, SWT.NONE);
+		lblKorisnikoIme.setBounds(10, 10, 91, 15);
+		lblKorisnikoIme.setText("Korisni\u010Dko ime :");
+
+		Label lblLozinka = new Label(this, SWT.NONE);
+		lblLozinka.setBounds(10, 64, 55, 15);
+		lblLozinka.setText("Lozinka :");
+
+		txtUsername = new Text(this, SWT.BORDER);
+		txtUsername.setBounds(10, 31, 197, 21);
+
+		txtLozinka = new Text(this, SWT.BORDER | SWT.PASSWORD);
+		txtLozinka.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+		txtLozinka.setToolTipText("");
+		txtLozinka.setBounds(10, 85, 197, 21);
+
+		Button btnLogin = new Button(this, SWT.NONE);
+		btnLogin.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				String Username = txtUsername.getText().trim();
+				String Password = txtLozinka.getText().trim();
+				KorisnickiNalog k = LoginServis.loginKorisnik(txtUsername.getText(), txtLozinka.getText());
+				if (Username == "" || Password == "")
+				{
+					MessageDialog.openError(null, "Greska", "Polje Korisničko ime i/ili Lozinka je prazno!");
+					return;
+				}
+				if (txtUsername.getText().length() < 3 || txtLozinka.getText().length() < 3)
+				{
+					MessageDialog.openError(null, "Greska", "Polja Korisničko ime i Lozinka moraju biti minimalno dužine 3 karaktera!");
+					return;
+				}
+				if (k == null)
+				{
+					MessageDialog.openError(null, "Greška", "Username i/ili password je pogrešan!");
+					return;
+				} else if (k.getIsAktivan() == false)
+				{
+					MessageDialog.openError(null, "Greska", "Vaš account" + " " + k.getUsername() + " " + "je deaktiviran!");
+					return;
+				}
+				Sesija.logiraniKorisnik = k;
+				close();
+				if (k.getTipK() == TipKorisnika.administrator)
+					frmGlavnaAdministrator.otvori();
+
+				if (k.getTipK() == TipKorisnika.doktor)
+					frmGlavnaDoktor.otvori();
+				if (k.getTipK() == TipKorisnika.tehnickoOsoblje)
+					frmGlavnaTehnickoOsoblje.otvori();
+
+			}
+		});
+		btnLogin.setBounds(10, 125, 91, 21);
+		btnLogin.setText("Login");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(116, 125, 91, 21);
+		btnOdustani.setText("Odustani");
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Veterinarska stanica::Login");
+		setSize(222, 185);
+	}
+
+}

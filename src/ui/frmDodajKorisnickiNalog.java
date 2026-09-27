@@ -1,0 +1,210 @@
+package ui;
+
+import helper.DAO;
+import helper.Konekcija;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import model.KorisnickiNalog;
+import model.KorisnickiNalog.TipKorisnika;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmDodajKorisnickiNalog extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajKorisnickiNalog shell = new frmDodajKorisnickiNalog(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblUsername;
+	private final Text txtUsername;
+	private final Label lblPassword;
+	private final Text txtPassword;
+	private final Button btnSacuvaj;
+
+	private final Button btnOdustani;
+	private final Label lblTipKorisnika;
+	private final Button btnAdministrator;
+	private final Button btnTehnickoOsoblje;
+	private final Button btnDoktor;
+	private Label lblDodajKorisnikiNalog;
+	private Label lblDodajNalog;
+	private Label lblKorisnikiNalog;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmDodajKorisnickiNalog(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmDodajKorisnickiNalog.class, "/ui/slike/Button-Add-icon.png"));
+
+		lblUsername = new Label(this, SWT.NONE);
+		lblUsername.setBounds(22, 112, 94, 15);
+		lblUsername.setText("Korisni\u010Dko ime:");
+
+		txtUsername = new Text(this, SWT.BORDER);
+		txtUsername.setBounds(138, 109, 158, 21);
+
+		lblPassword = new Label(this, SWT.NONE);
+		lblPassword.setBounds(22, 139, 94, 15);
+		lblPassword.setText("Lozinka:");
+
+		txtPassword = new Text(this, SWT.BORDER | SWT.PASSWORD);
+		txtPassword.setBounds(138, 136, 158, 21);
+
+		btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				KorisnickiNalog nalog = new KorisnickiNalog();
+				String username = txtUsername.getText();
+				String password = txtPassword.getText();
+				nalog.setUsername(username);
+				nalog.setPassword(password);
+				nalog.setIsAktivan(true);
+				EntityManager em = Konekcija.getEmf().createEntityManager();
+				TypedQuery<KorisnickiNalog> q = em.createQuery("select k from KorisnickiNalog k  where k.username = ? ", KorisnickiNalog.class);
+				q.setParameter(1, username);
+				List<KorisnickiNalog> lista = q.getResultList();
+				em.close();
+				if ((btnAdministrator.getSelection() && btnTehnickoOsoblje.getSelection() && btnDoktor.getSelection())
+						|| (btnAdministrator.getSelection() && btnTehnickoOsoblje.getSelection())
+						|| (btnAdministrator.getSelection() && btnDoktor.getSelection())
+						|| (btnDoktor.getSelection() && btnTehnickoOsoblje.getSelection()))
+				{
+					MessageDialog.openInformation(null, "Informacija", "Ne možete dodati dva razlièita tipa korisnika!");
+					return;
+				}
+				Boolean EmptySelectionAdmin = btnAdministrator.getSelection();
+				Boolean EmptySelectionTehnicko = btnTehnickoOsoblje.getSelection();
+				Boolean EmptySelectionDoktor = btnDoktor.getSelection();
+				if (username.isEmpty() || password.isEmpty()
+						|| (EmptySelectionAdmin == false && EmptySelectionTehnicko == false && EmptySelectionDoktor == false))
+				{
+					MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos !");
+
+					return;
+				}
+
+				if (btnAdministrator.getSelection())
+					nalog.setTipK(TipKorisnika.administrator);
+
+				if (btnTehnickoOsoblje.getSelection())
+					nalog.setTipK(TipKorisnika.tehnickoOsoblje);
+
+				if (btnDoktor.getSelection())
+					nalog.setTipK(TipKorisnika.doktor);
+				if (lista.size() == 0)
+				{
+					DAO.snimi(nalog);
+					MessageDialog.openInformation(null, "Informacija", "Korisnièki nalog uspješno dodat!");
+					close();
+				} else
+				{
+					MessageDialog.openError(null, "Greška", "Nije moguæe dodati dva ista korisnièka naloga!");
+				}
+				lista.clear();
+			}
+		});
+		btnSacuvaj.setBounds(138, 257, 75, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(221, 257, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		lblTipKorisnika = new Label(this, SWT.NONE);
+		lblTipKorisnika.setBounds(22, 175, 75, 15);
+		lblTipKorisnika.setText("Tip korisnika: ");
+
+		btnAdministrator = new Button(this, SWT.CHECK);
+		btnAdministrator.setBounds(138, 174, 128, 16);
+		btnAdministrator.setText("Administrator");
+
+		btnTehnickoOsoblje = new Button(this, SWT.CHECK);
+		btnTehnickoOsoblje.setBounds(138, 196, 128, 16);
+		btnTehnickoOsoblje.setText("Tehni\u010Dko osoblje");
+
+		btnDoktor = new Button(this, SWT.CHECK);
+		btnDoktor.setBounds(138, 218, 128, 16);
+		btnDoktor.setText("Doktor");
+
+		lblDodajKorisnikiNalog = new Label(this, SWT.NONE);
+		lblDodajKorisnikiNalog.setText("Dodaj master");
+		lblDodajKorisnikiNalog.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblDodajKorisnikiNalog.setBounds(163, 36, 120, 21);
+
+		lblDodajNalog = new Label(this, SWT.NONE);
+		lblDodajNalog.setImage(SWTResourceManager.getImage(frmDodajKorisnickiNalog.class, "/ui/slike/nalogAdd.png"));
+		lblDodajNalog.setBounds(22, 18, 55, 58);
+
+		lblKorisnikiNalog = new Label(this, SWT.NONE);
+		lblKorisnikiNalog.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblKorisnikiNalog.setBounds(155, 55, 128, 21);
+		lblKorisnikiNalog.setText("korisni\u010Dki nalog:");
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Dodavanje master naloga");
+		setSize(314, 320);
+
+	}
+}

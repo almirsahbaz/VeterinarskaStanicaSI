@@ -1,0 +1,135 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+
+import java.util.List;
+
+import model.Tehnicko_osoblje;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmObrisiTehnickoOsoblje extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmObrisiTehnickoOsoblje shell = new frmObrisiTehnickoOsoblje(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblKorisnikoIme;
+	private final MojComboBox cmbKorisnickiNalog;
+	private final Button btnObrisi;
+
+	private final Button btnOdustani;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmObrisiTehnickoOsoblje(Display display)
+	{
+		super(display, SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmObrisiTehnickoOsoblje.class, "/ui/slike/data-delete-icon.png"));
+
+		lblKorisnikoIme = new Label(this, SWT.NONE);
+		lblKorisnikoIme.setBounds(10, 21, 111, 15);
+		lblKorisnikoIme.setText("Korisni\u010Dko ime:");
+
+		cmbKorisnickiNalog = new MojComboBox(this, SWT.READ_ONLY);
+		cmbKorisnickiNalog.setBounds(121, 18, 173, 23);
+
+		btnObrisi = new Button(this, SWT.NONE);
+		btnObrisi.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnObrisi_widgetSelected(arg0);
+			}
+		});
+		btnObrisi.setBounds(121, 54, 75, 25);
+		btnObrisi.setText("Obri\u0161i");
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setBounds(219, 54, 75, 25);
+		btnOdustani.setText("Odustani");
+		createContents();
+		List<Tehnicko_osoblje> lista = DAO.getAll(Tehnicko_osoblje.class);
+		for (Tehnicko_osoblje t : lista)
+		{
+			cmbKorisnickiNalog.dodajStavku(t, t.getNalog().getUsername());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Obriši tehnièko osoblje");
+		setSize(306, 122);
+
+	}
+
+	protected void do_btnObrisi_widgetSelected(SelectionEvent arg0)
+	{
+		Tehnicko_osoblje t = cmbKorisnickiNalog.uzmiOznacenuStavku(Tehnicko_osoblje.class);
+		if (cmbKorisnickiNalog.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Morate odabrati korisnièki nalog koji želite obrisati!");
+			return;
+		}
+		DAO.brisi(t);
+		MessageDialog.openInformation(null, "Informacija", "Tehnièko osoblje uspješno obrisano!");
+		close();
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		close();
+	}
+}

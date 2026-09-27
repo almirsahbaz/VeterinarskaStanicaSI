@@ -1,0 +1,173 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+import helper.MojKalendar;
+
+import java.util.List;
+
+import model.Pacijent;
+import model.Tehnicko_osoblje;
+import model.Vlasnik;
+import model.Vrsta;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmAddPacijenta extends Shell
+{
+
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmAddPacijenta shell = new frmAddPacijenta(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtImePacijenta;
+	private final MojComboBox cmbOsoblje;
+	private final MojComboBox cmbVlasnik;
+	private final MojComboBox cmbVrsta;
+
+	public frmAddPacijenta(Display display)
+	{
+		super(display, SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmAddPacijenta.class, "/ui/slike/Button-Add-icon.png"));
+		setLayout(null);
+
+		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setBounds(22, 221, 88, 15);
+		lblNewLabel.setText("Datum prijema : ");
+
+		final MojKalendar dtDatumPrijema = new MojKalendar(this, SWT.BORDER);
+		dtDatumPrijema.setBounds(127, 221, 80, 24);
+
+		Label lblNewLabel_1 = new Label(this, SWT.NONE);
+		lblNewLabel_1.setBounds(22, 22, 80, 15);
+		lblNewLabel_1.setText("Ime pacijenta : ");
+
+		txtImePacijenta = new Text(this, SWT.BORDER);
+		txtImePacijenta.setBounds(127, 19, 116, 21);
+
+		Label lblGodite = new Label(this, SWT.NONE);
+		lblGodite.setBounds(19, 180, 49, 15);
+		lblGodite.setText("Godi\u0161te : ");
+
+		final MojKalendar dtGodiste = new MojKalendar(this, SWT.BORDER);
+		dtGodiste.setBounds(127, 180, 80, 24);
+
+		Label lblVlasnik = new Label(this, SWT.NONE);
+		lblVlasnik.setBounds(22, 61, 46, 15);
+		lblVlasnik.setText("Vlasnik : ");
+
+		cmbVlasnik = new MojComboBox(this, SWT.READ_ONLY);
+		cmbVlasnik.setBounds(127, 58, 116, 23);
+
+		Button btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Pacijent pacijent = new Pacijent();
+				String Ime = txtImePacijenta.getText();
+				pacijent.setIme(Ime);
+				pacijent.setVlasnik(cmbVlasnik.uzmiOznacenuStavku(Vlasnik.class));
+				pacijent.setTehnicko_osoblje(cmbOsoblje.uzmiOznacenuStavku(Tehnicko_osoblje.class));
+				pacijent.setVrsta(cmbVrsta.uzmiOznacenuStavku(Vrsta.class));
+				pacijent.setGodiste(dtGodiste.getDatum());
+				pacijent.setDatumPrijema(dtDatumPrijema.getDatum());
+				if (Ime.isEmpty() || cmbVlasnik.getText() == "" || cmbVrsta.getText() == "" || cmbOsoblje.getText() == "")
+				{
+					MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos !");
+					return;
+				}
+				Dodavanje.DodajPacijenta(pacijent);
+				MessageDialog.openInformation(null, "Informacija", "Pacijent uspješno dodat!");
+				close();
+			}
+		});
+		btnSacuvaj.setBounds(22, 265, 99, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(144, 265, 99, 25);
+		btnOdustani.setText("Odustani");
+
+		Label lblTehnikoOsoblje = new Label(this, SWT.NONE);
+		lblTehnikoOsoblje.setBounds(22, 103, 99, 15);
+		lblTehnikoOsoblje.setText("Tehni\u010Dko osoblje : ");
+
+		cmbOsoblje = new MojComboBox(this, SWT.READ_ONLY);
+		cmbOsoblje.setBounds(127, 100, 116, 23);
+
+		Label lblVrsta = new Label(this, SWT.NONE);
+		lblVrsta.setBounds(22, 144, 55, 15);
+		lblVrsta.setText("Vrsta :");
+
+		cmbVrsta = new MojComboBox(this, SWT.READ_ONLY);
+		cmbVrsta.setBounds(127, 144, 116, 23);
+		createContents();
+		List<Tehnicko_osoblje> lista = DAO.getAll(Tehnicko_osoblje.class);
+		for (Tehnicko_osoblje t : lista)
+		{
+			cmbOsoblje.dodajStavku(t, t.getIme());
+		}
+		List<Vlasnik> lista2 = DAO.getAll(Vlasnik.class);
+		for (Vlasnik v : lista2)
+		{
+			cmbVlasnik.dodajStavku(v, v.getIme());
+		}
+		List<Vrsta> lista3 = DAO.getAll(Vrsta.class);
+		for (Vrsta v : lista3)
+		{
+			cmbVrsta.dodajStavku(v, v.getImeVrste());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Dodavanje pacijenta");
+		setSize(267, 328);
+	}
+}

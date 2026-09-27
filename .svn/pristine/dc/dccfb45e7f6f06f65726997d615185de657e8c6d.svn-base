@@ -1,0 +1,157 @@
+package servis;
+
+import helper.DAO;
+import helper.Konekcija;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import model.Administrator;
+import model.Dijagnoze;
+import model.Doktori;
+import model.Gradovi;
+import model.IzvrseneUsluge;
+import model.KorisnickiNalog;
+import model.KupljeniLijekovi;
+import model.Lijekovi;
+import model.Odjeli;
+import model.Pacijent;
+import model.Racuni;
+import model.StrucneSpreme;
+import model.Tehnicko_osoblje;
+import model.Terapija;
+import model.Uplata;
+import model.Usluge;
+import model.Vlasnik;
+import model.Zvanje;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+
+public class Dodavanje
+{
+	public static void DodajAdmina(Administrator admin)
+	{
+		DAO.snimi(admin);
+	}
+
+	public static void DodajDijagnozu(final String naziv, final String sifra)
+	{
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+		Dijagnoze dijagnoza = new Dijagnoze();
+		dijagnoza.setNaziv_bolesti(naziv);
+		dijagnoza.setSifra_dijagnoze(sifra);
+		TypedQuery<Dijagnoze> q = em.createQuery("select d from Dijagnoze d  where d.Naziv_dijagnoze = ? OR d.Sifra_dijagnoze = ?", Dijagnoze.class);
+		q.setParameter(1, naziv);
+		q.setParameter(2, sifra);
+		List<Dijagnoze> k = q.getResultList();
+		em.close();
+		if (k.size() == 0)
+		{
+			DAO.snimi(dijagnoza);
+			MessageDialog.openInformation(null, "Informacija", "Dijagnoza uspješno dodata!");
+		} else
+		{
+			MessageDialog.openError(null, "Greška", "Nije moguće dodati dvije iste dijagnoze!");
+		}
+		k.clear();
+	}
+
+	public static void DodajDoktora(Doktori doktor)
+	{
+		DAO.snimi(doktor);
+	}
+
+	public static void DodajGrad(Gradovi grad)
+	{
+		DAO.snimi(grad);
+	}
+
+	public static void DodajLijek(Lijekovi lijek)
+	{
+		DAO.snimi(lijek);
+	}
+
+	public static void DodajNalog(KorisnickiNalog nalog)
+	{
+		DAO.snimi(nalog);
+	}
+
+	public static void DodajOdjel(Odjeli odjel)
+	{
+		DAO.snimi(odjel);
+	}
+
+	public static void DodajPacijenta(Pacijent pacijent)
+	{
+		DAO.snimi(pacijent);
+
+	}
+
+	public static void DodajRacun(Racuni r)
+	{
+		DAO.update(r);
+	}
+
+	public static void DodajStrucnuSpremu(StrucneSpreme sprema)
+	{
+		DAO.snimi(sprema);
+	}
+
+	public static void DodajTehnicko(Tehnicko_osoblje tehnicko)
+	{
+		DAO.snimi(tehnicko);
+	}
+
+	public static void DodajTerapiju(Terapija terapija)
+	{
+		DAO.snimi(terapija);
+
+	}
+
+	public static void DodajUplatu(Uplata uplata)
+	{
+		DAO.snimi(uplata);
+
+	}
+
+	public static void DodajUslugu(Usluge usluga)
+	{
+		DAO.snimi(usluga);
+
+	}
+
+	public static void dodajvlasnika(Vlasnik v)
+	{
+
+		DAO.snimi(v);
+
+	}
+
+	public static void DodajZvanje(Zvanje zvanje)
+	{
+		DAO.snimi(zvanje);
+	}
+
+	public static void EvidencijaRacuna(KupljeniLijekovi k, IzvrseneUsluge i)
+	{
+		DAO.snimi(k);
+		DAO.snimi(i);
+	}
+
+	public static void IzmijeniAdmina(Administrator admin)
+	{
+		DAO.update(admin);
+	}
+
+	public static void IzmijeniDoktora(Doktori doktor)
+	{
+		DAO.update(doktor);
+	}
+
+	public static void IzmijeniTehnicko(Tehnicko_osoblje tehnicko)
+	{
+		DAO.update(tehnicko);
+	}
+}

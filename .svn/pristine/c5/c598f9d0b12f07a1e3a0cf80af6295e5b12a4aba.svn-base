@@ -1,0 +1,130 @@
+package ui;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import model.Lijekovi;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Pretraga;
+
+public class frmPretragaLijekova extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmPretragaLijekova shell = new frmPretragaLijekova(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text argument;
+	private final Table tblLijekovi;
+	private final TableColumn tblclmnNewColumn;
+	private final TableColumn tblclmnRokTrajanja;
+
+	private final TableColumn tblclmnVrsta;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmPretragaLijekova(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmPretragaLijekova.class, "/ui/slike/search-b-icon.png"));
+		setLayout(null);
+
+		argument = new Text(this, SWT.BORDER);
+		argument.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyPressed(KeyEvent arg0)
+			{
+				do_argument_keyPressed(arg0);
+			}
+		});
+		argument.setBounds(10, 10, 256, 21);
+
+		tblLijekovi = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		tblLijekovi.setBounds(10, 37, 256, 233);
+		tblLijekovi.setHeaderVisible(true);
+		tblLijekovi.setLinesVisible(true);
+
+		tblclmnNewColumn = new TableColumn(tblLijekovi, SWT.NONE);
+		tblclmnNewColumn.setWidth(69);
+		tblclmnNewColumn.setText("Naziv");
+
+		tblclmnRokTrajanja = new TableColumn(tblLijekovi, SWT.NONE);
+		tblclmnRokTrajanja.setWidth(95);
+		tblclmnRokTrajanja.setText("Rok trajanja");
+
+		tblclmnVrsta = new TableColumn(tblLijekovi, SWT.NONE);
+		tblclmnVrsta.setWidth(87);
+		tblclmnVrsta.setText("Vrsta");
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Pretraga lijekova");
+		setSize(277, 308);
+
+	}
+
+	protected void do_argument_keyPressed(KeyEvent arg0)
+	{
+		tblLijekovi.removeAll();
+		List<Lijekovi> result = Pretraga.PretragaLijekova(argument.getText());
+		for (Lijekovi l : result)
+		{
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+			Calendar cal = Calendar.getInstance();
+
+			final TableItem tblI = new TableItem(tblLijekovi, SWT.None);
+			tblI.setText(0, l.getNaziv());
+			tblI.setText(1, dateFormat.format(l.getRok_trajanja()));
+			tblI.setText(2, l.getVrsta());
+		}
+	}
+}

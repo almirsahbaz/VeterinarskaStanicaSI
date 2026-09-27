@@ -1,0 +1,142 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+
+import java.util.List;
+
+import model.Lijekovi;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmObrisiLijek extends Shell
+{
+
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmObrisiLijek shell = new frmObrisiLijek(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	private final MojComboBox cmbLijekovi;
+
+	public frmObrisiLijek(Display display)
+	{
+		super(display, SWT.MIN | SWT.RESIZE | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmObrisiLijek.class, "/ui/slike/data-delete-icon.png"));
+		setLayout(null);
+
+		Label lblLijek = new Label(this, SWT.NONE);
+		lblLijek.setBounds(10, 80, 42, 15);
+		lblLijek.setText("Lijek :");
+
+		cmbLijekovi = new MojComboBox(this, SWT.READ_ONLY);
+		cmbLijekovi.setBounds(87, 77, 147, 23);
+
+		Button btnObrisi = new Button(this, SWT.NONE);
+		btnObrisi.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnObrisi_widgetSelected(arg0);
+			}
+		});
+		btnObrisi.setBounds(87, 125, 64, 25);
+		btnObrisi.setText("Obri\u0161i");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setBounds(170, 125, 64, 25);
+		btnOdustani.setText("Odustani");
+
+		Label lblObrisiLijek = new Label(this, SWT.NONE);
+		lblObrisiLijek.setFont(SWTResourceManager.getFont("Arial", 14, SWT.BOLD));
+		lblObrisiLijek.setBounds(87, 28, 147, 23);
+		lblObrisiLijek.setText("OBRI\u0160I LIJEK");
+
+		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setImage(SWTResourceManager.getImage(frmObrisiLijek.class, "/ui/slike/deletefrm.png"));
+		lblNewLabel.setBounds(10, 28, 55, 46);
+		createContents();
+		List<Lijekovi> lista = DAO.getAll(Lijekovi.class);
+		for (Lijekovi l : lista)
+		{
+			cmbLijekovi.dodajStavku(l, l.getNaziv());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Brisanje lijekova");
+		setSize(260, 195);
+
+	}
+
+	protected void do_btnObrisi_widgetSelected(SelectionEvent arg0)
+	{
+		Lijekovi l = cmbLijekovi.uzmiOznacenuStavku(Lijekovi.class);
+		if (cmbLijekovi.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Morate odabrati lijek koji želite obrisati !");
+			return;
+		}
+		DAO.brisi(l);
+		MessageDialog.openInformation(null, "Informacija", "Lijek uspješno obrisan !");
+		close();
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		close();
+	}
+}

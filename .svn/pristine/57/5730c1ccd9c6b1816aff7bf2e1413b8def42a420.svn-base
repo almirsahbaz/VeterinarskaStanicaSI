@@ -1,0 +1,104 @@
+package ui;
+
+import helper.DAO;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import model.Uplata;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmPregledUplata extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmPregledUplata shell = new frmPregledUplata(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Table tbluplate;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmPregledUplata(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmPregledUplata.class, "/ui/slike/data-delete-icon.png"));
+
+		tbluplate = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		tbluplate.setBounds(10, 10, 376, 252);
+		tbluplate.setHeaderVisible(true);
+		tbluplate.setLinesVisible(true);
+
+		TableColumn tblclmnIznos = new TableColumn(tbluplate, SWT.NONE);
+		tblclmnIznos.setWidth(119);
+		tblclmnIznos.setText("Iznos");
+
+		TableColumn tblclmnDatumUplate = new TableColumn(tbluplate, SWT.NONE);
+		tblclmnDatumUplate.setWidth(128);
+		tblclmnDatumUplate.setText("Datum uplate");
+
+		TableColumn tblclmnRacun = new TableColumn(tbluplate, SWT.NONE);
+		tblclmnRacun.setWidth(125);
+		tblclmnRacun.setText("Racun");
+		createContents();
+		for (Uplata u : DAO.getAll(Uplata.class))
+		{
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+			Calendar cal = Calendar.getInstance();
+
+			TableItem tabela = new TableItem(tbluplate, SWT.None);
+			tabela.setText(0, u.getIznos());
+			tabela.setText(1, dateFormat.format(u.getDatum()));
+			tabela.setText(2, u.getRacuni().getNaziv());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Pregled uplata");
+		setSize(402, 300);
+
+	}
+
+}

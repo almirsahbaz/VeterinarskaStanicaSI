@@ -1,0 +1,136 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+
+import java.util.List;
+
+import model.Pacijent;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmObrisiPacijenta extends Shell
+{
+
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmObrisiPacijenta shell = new frmObrisiPacijenta(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final MojComboBox cmbPacijenti;
+
+	public frmObrisiPacijenta(Display display)
+	{
+		super(display, SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmObrisiPacijenta.class, "/ui/slike/data-delete-icon.png"));
+
+		Label lblPacijent = new Label(this, SWT.NONE);
+		lblPacijent.setBounds(21, 84, 55, 15);
+		lblPacijent.setText("Pacijent : ");
+
+		cmbPacijenti = new MojComboBox(this, SWT.READ_ONLY);
+		cmbPacijenti.setBounds(113, 81, 153, 23);
+
+		Button btnObrisi = new Button(this, SWT.NONE);
+		btnObrisi.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnObrisi_widgetSelected(arg0);
+			}
+		});
+		btnObrisi.setBounds(110, 128, 75, 25);
+		btnObrisi.setText("Obri\u0161i");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setBounds(191, 128, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		Label lblObriiPacijenta = new Label(this, SWT.NONE);
+		lblObriiPacijenta.setFont(SWTResourceManager.getFont("Arial", 14, SWT.BOLD));
+		lblObriiPacijenta.setBounds(90, 30, 176, 33);
+		lblObriiPacijenta.setText("OBRI\u0160I PACIJENTA");
+
+		Label label = new Label(this, SWT.NONE);
+		label.setImage(SWTResourceManager.getImage(frmObrisiPacijenta.class, "/ui/slike/1389306838_Remove-Male-User.png"));
+		label.setBounds(21, 30, 55, 47);
+		createContents();
+		List<Pacijent> lista = DAO.getAll(Pacijent.class);
+		for (Pacijent p : lista)
+		{
+			cmbPacijenti.dodajStavku(p, p.getIme());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Brisanje pacijenata");
+		setSize(282, 193);
+
+	}
+
+	protected void do_btnObrisi_widgetSelected(SelectionEvent arg0)
+	{
+		Pacijent p = cmbPacijenti.uzmiOznacenuStavku(Pacijent.class);
+		if (cmbPacijenti.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Morate odabrati pacijenta kojeg želite obrisati!");
+			return;
+		}
+		DAO.brisi(p);
+		MessageDialog.openInformation(null, "Informacija", "Pacijent uspješno obrisan!");
+		close();
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		close();
+	}
+}

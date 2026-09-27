@@ -1,0 +1,202 @@
+package ui;
+
+import helper.DAO;
+import model.KorisnickiNalog;
+import model.KorisnickiNalog.TipKorisnika;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmMojiPodaci extends Shell
+{
+
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmMojiPodaci shell = new frmMojiPodaci(null);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final KorisnickiNalog nalog;
+	private final Text txtUsername;
+	private final Text txtTipKorisnika;
+	private final Label lblTipKorisnika;
+	private final Label lblStatus;
+	private final Text txtStatus;
+	private final Label lblLozinka;
+	private final Label lblPotvrdaLozinke;
+	private final Text txtLozinka;
+	private final Text txtPotvrdaLozinke;
+	private final Label label;
+
+	public frmMojiPodaci(KorisnickiNalog k)
+	{
+		super(SWT.SHELL_TRIM);
+		setImage(SWTResourceManager.getImage(frmMojiPodaci.class, "/ui/slike/EditThumb.png"));
+		createContents();
+		this.nalog = k;
+		setLayout(null);
+
+		txtUsername = new Text(this, SWT.BORDER | SWT.READ_ONLY);
+		txtUsername.setBounds(121, 32, 188, 21);
+		txtUsername.setText(nalog.getUsername());
+
+		Label lblUsername = new Label(this, SWT.NONE);
+		lblUsername.setBounds(10, 35, 65, 15);
+		lblUsername.setText("Username:");
+
+		txtTipKorisnika = new Text(this, SWT.BORDER | SWT.READ_ONLY);
+		txtTipKorisnika.setBounds(121, 72, 188, 21);
+		txtTipKorisnika.setText(nalog.getTipK().toString());
+
+		lblTipKorisnika = new Label(this, SWT.NONE);
+		lblTipKorisnika.setBounds(10, 75, 79, 15);
+		lblTipKorisnika.setText("Tip korisnika:");
+
+		lblStatus = new Label(this, SWT.NONE);
+		lblStatus.setBounds(10, 118, 55, 15);
+		lblStatus.setText("Status:");
+
+		txtStatus = new Text(this, SWT.BORDER | SWT.READ_ONLY);
+		txtStatus.setBounds(121, 115, 188, 21);
+
+		lblLozinka = new Label(this, SWT.NONE);
+		lblLozinka.setBounds(10, 150, 55, 15);
+		lblLozinka.setText("Lozinka:");
+
+		lblPotvrdaLozinke = new Label(this, SWT.NONE);
+		lblPotvrdaLozinke.setBounds(10, 184, 91, 15);
+		lblPotvrdaLozinke.setText("Potvrda lozinke:");
+
+		txtLozinka = new Text(this, SWT.BORDER | SWT.PASSWORD);
+		txtLozinka.setBounds(121, 147, 188, 21);
+
+		txtPotvrdaLozinke = new Text(this, SWT.BORDER | SWT.PASSWORD);
+		txtPotvrdaLozinke.setBounds(121, 181, 188, 21);
+
+		Button btnIzmijeniLozinku = new Button(this, SWT.NONE);
+		btnIzmijeniLozinku.setBounds(121, 231, 91, 25);
+		btnIzmijeniLozinku.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnIzmjeniLozinku_widgetSelected(arg0);
+			}
+		});
+		btnIzmijeniLozinku.setText("Izmijeni lozinku");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.setBounds(218, 231, 91, 25);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setText("Odustani");
+
+		label = new Label(this, SWT.NONE);
+		label.setImage(SWTResourceManager.getImage(frmMojiPodaci.class, "/ui/slike/Editing.png"));
+		label.setBounds(27, 217, 48, 63);
+		if (nalog.getIsAktivan() == true)
+		{
+			txtStatus.setText("Aktivan");
+		}
+		if (nalog.getTipK() == TipKorisnika.administrator)
+		{
+			txtTipKorisnika.setText("Administrator");
+		}
+		if (nalog.getTipK() == TipKorisnika.doktor)
+		{
+			txtTipKorisnika.setText("Doktor");
+		}
+		if (nalog.getTipK() == TipKorisnika.tehnickoOsoblje)
+		{
+			txtTipKorisnika.setText("Tehni�ko osoblje");
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Moji podaci");
+		setSize(334, 315);
+
+	}
+
+	protected void do_btnIzmjeniLozinku_widgetSelected(SelectionEvent arg0)
+	{
+		if (txtLozinka.getText() == "" || txtPotvrdaLozinke.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos!");
+			return;
+		}
+		if (txtLozinka.getText().length() < 3 || txtPotvrdaLozinke.getText().length() < 3)
+		{
+			MessageDialog.openError(null, "Greška", "Sva polja moraju biti minimalno dužine 3 karaktera!");
+			return;
+		}
+		if ((txtLozinka.getText().equalsIgnoreCase(nalog.getPassword()) && txtPotvrdaLozinke.getText().equals(nalog.getPassword())))
+		{
+			MessageDialog.openError(null, "Greška", "Ne možete unijeti istu lozinku!");
+			return;
+		}
+		if (txtLozinka.getText().equalsIgnoreCase(txtPotvrdaLozinke.getText()))
+		{
+			nalog.setUsername(txtUsername.getText());
+			nalog.setTipK(nalog.getTipK());
+			nalog.setIsAktivan(true);
+			nalog.setPassword(txtLozinka.getText());
+		} else
+		{
+			MessageDialog.openError(null, "Greška", "Polja lozinka i potvrda lozinke moraju biti isti!");
+			return;
+		}
+		DAO.update(nalog);
+		MessageDialog.openInformation(null, "Informacija", "Lozinka uspješno promjenjena!");
+		this.close();
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		this.close();
+	}
+}

@@ -1,0 +1,137 @@
+package ui;
+
+import helper.MojKalendar;
+import model.Terapija;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmDodajTerapiju extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajTerapiju shell = new frmDodajTerapiju(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtVrstaTerapije;
+	private final MojKalendar dtDatum;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmDodajTerapiju(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmDodajTerapiju.class, "/ui/slike/1389307157_040.png"));
+
+		Button btnSauvaj = new Button(this, SWT.NONE);
+		btnSauvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Terapija ter = new Terapija();
+				if (txtVrstaTerapije.getText() == "")
+				{
+					MessageDialog.openError(null, "Greska", "Sva polja su obavezna za unos!");
+					return;
+				} else
+				{
+					ter.setVrsta(txtVrstaTerapije.getText());
+					ter.setDatumTerapije(dtDatum.getDatum());
+					Dodavanje.DodajTerapiju(ter);
+					MessageDialog.openInformation(null, "Informacija", "Terapija uspješno dodata!");
+					close();
+				}
+			}
+		});
+		btnSauvaj.setBounds(117, 176, 75, 25);
+		btnSauvaj.setText("Sa\u010Duvaj");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(215, 176, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		Label lblVrstaTerapije = new Label(this, SWT.NONE);
+		lblVrstaTerapije.setBounds(10, 103, 75, 15);
+		lblVrstaTerapije.setText("Vrsta terapije :");
+
+		Label lblDatum = new Label(this, SWT.NONE);
+		lblDatum.setBounds(10, 136, 55, 15);
+		lblDatum.setText("Datum :");
+
+		dtDatum = new MojKalendar(this, SWT.BORDER);
+		dtDatum.setBounds(117, 136, 75, 24);
+
+		txtVrstaTerapije = new Text(this, SWT.BORDER);
+		txtVrstaTerapije.setBounds(116, 100, 177, 21);
+
+		Label label = new Label(this, SWT.NONE);
+		label.setImage(SWTResourceManager.getImage(frmDodajTerapiju.class, "/ui/slike/1389307157_040.png"));
+		label.setBounds(10, 28, 55, 58);
+
+		Label lblTerapiju = new Label(this, SWT.NONE);
+		lblTerapiju.setText("DODAJ TERAPIJU");
+		lblTerapiju.setFont(SWTResourceManager.getFont("Arial", 14, SWT.BOLD));
+		lblTerapiju.setBounds(117, 43, 168, 38);
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Dodaj terapiju");
+		setSize(313, 239);
+
+	}
+
+}

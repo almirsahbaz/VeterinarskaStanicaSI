@@ -1,0 +1,104 @@
+package model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+@Entity
+public class Tehnicko_osoblje
+{
+
+	@Id
+	@GeneratedValue
+	private int tehnickoOsobljeID;
+
+	private String Vrsta_posla;
+
+	private String ime;
+
+	private String prezime;
+
+	@JoinColumn(nullable = false)
+	@ManyToOne
+	private KorisnickiNalog _nalog;
+
+	@JoinColumn(nullable = false)
+	@ManyToOne
+	private Odjeli Odjel;
+
+	@ManyToOne
+	private Gradovi Grad;
+
+	public Gradovi getGrad()
+	{
+		return Grad;
+	}
+
+	public String getIme()
+	{
+		return ime;
+	}
+
+	public KorisnickiNalog getNalog()
+	{
+		return _nalog;
+	}
+
+	public Odjeli getOdjel()
+	{
+		return Odjel;
+	}
+
+	public String getPrezime()
+	{
+		return prezime;
+	}
+
+	public int getTehnickoOsobljeID()
+	{
+		return tehnickoOsobljeID;
+	}
+
+	public String getVrsta_posla()
+	{
+		return Vrsta_posla;
+	}
+
+	public void setGrad(Gradovi grad)
+	{
+		Grad = grad;
+	}
+
+	public void setIme(String ime)
+	{
+		this.ime = ime;
+	}
+
+	public void setNalog(KorisnickiNalog Nalog)
+	{
+		_nalog = Nalog;
+	}
+
+	public void setOdjel(Odjeli odjel)
+	{
+		Odjel = odjel;
+	}
+
+	public void setPrezime(String prezime)
+	{
+		this.prezime = prezime;
+	}
+
+	public void setTehnickoOsobljeID(int tehnickoOsobljeID)
+	{
+		this.tehnickoOsobljeID = tehnickoOsobljeID;
+	}
+
+	public void setVrsta_posla(String vrsta_posla)
+	{
+		Vrsta_posla = vrsta_posla;
+	}
+
+}

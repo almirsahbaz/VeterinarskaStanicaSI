@@ -1,0 +1,209 @@
+package ui;
+
+import helper.DAO;
+import helper.Konekcija;
+import helper.MojComboBox;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import model.Doktori;
+import model.Gradovi;
+import model.KorisnickiNalog;
+import model.KorisnickiNalog.TipKorisnika;
+import model.Zvanje;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmDodajDoktora extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajDoktora shell = new frmDodajDoktora(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblZvanje;
+	private final Label lblPozicija;
+	private final Label lblIme;
+	private final Label lblPrezime;
+	private final Label lblGrad;
+	private final MojComboBox cmbZvanje;
+	private final Text txtPozicija;
+	private final Text txtIme;
+	private final Text txtPrezime;
+	private final MojComboBox cmbGradovi;
+	private final Button btnSacuvaj;
+
+	private final Button btnOdustani;
+	private MojComboBox cmbUsername;
+	private Label lblUsername;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmDodajDoktora(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmDodajDoktora.class, "/ui/slike/Doctor-icon.png"));
+
+		lblZvanje = new Label(this, SWT.NONE);
+		lblZvanje.setBounds(21, 50, 118, 15);
+		lblZvanje.setText("Zvanje:");
+
+		lblPozicija = new Label(this, SWT.NONE);
+		lblPozicija.setBounds(21, 83, 118, 15);
+		lblPozicija.setText("Pozicija:");
+
+		lblIme = new Label(this, SWT.NONE);
+		lblIme.setBounds(21, 110, 118, 15);
+		lblIme.setText("Ime:");
+
+		lblPrezime = new Label(this, SWT.NONE);
+		lblPrezime.setBounds(21, 141, 118, 15);
+		lblPrezime.setText("Prezime:");
+
+		lblGrad = new Label(this, SWT.NONE);
+		lblGrad.setBounds(21, 170, 118, 15);
+		lblGrad.setText("Grad:");
+
+		cmbZvanje = new MojComboBox(this, SWT.READ_ONLY);
+		cmbZvanje.setBounds(145, 47, 156, 23);
+
+		txtPozicija = new Text(this, SWT.BORDER);
+		txtPozicija.setBounds(145, 80, 156, 21);
+
+		txtIme = new Text(this, SWT.BORDER);
+		txtIme.setBounds(145, 107, 156, 21);
+
+		txtPrezime = new Text(this, SWT.BORDER);
+		txtPrezime.setBounds(145, 138, 156, 21);
+
+		cmbGradovi = new MojComboBox(this, SWT.READ_ONLY);
+		cmbGradovi.setBounds(145, 167, 156, 23);
+
+		btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Doktori doktor = new Doktori();
+				doktor.setNalog(cmbUsername.uzmiOznacenuStavku(KorisnickiNalog.class));
+				doktor.setZvanje(cmbZvanje.uzmiOznacenuStavku(Zvanje.class));
+				String Pozicija = txtPozicija.getText();
+				doktor.setPozicija(Pozicija);
+				String Ime = txtIme.getText();
+				doktor.setIme(Ime);
+				String Prezime = txtPrezime.getText();
+				doktor.setPrezime(Prezime);
+				doktor.setGrad(cmbGradovi.uzmiOznacenuStavku(Gradovi.class));
+
+				if (Ime.isEmpty() || Prezime.isEmpty() || Pozicija.isEmpty() || cmbZvanje.getText() == "" || cmbGradovi.getText() == "")
+				{
+					MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos !");
+					return;
+				}
+				Dodavanje.DodajDoktora(doktor);
+				MessageDialog.openInformation(null, "Informacija", "Doktor uspješno dodat!");
+			}
+		});
+		btnSacuvaj.setBounds(145, 207, 75, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(226, 207, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		cmbUsername = new MojComboBox(this, SWT.READ_ONLY);
+		cmbUsername.setBounds(145, 17, 156, 23);
+
+		lblUsername = new Label(this, SWT.NONE);
+		lblUsername.setBounds(21, 20, 118, 15);
+		lblUsername.setText("Username:");
+		createContents();
+
+		List<Gradovi> lista = DAO.getAll(Gradovi.class);
+		for (Gradovi g : lista)
+		{
+			cmbGradovi.dodajStavku(g, g.getNaziv());
+		}
+
+		List<Zvanje> lista2 = DAO.getAll(Zvanje.class);
+		for (Zvanje z : lista2)
+		{
+			cmbZvanje.dodajStavku(z, z.getNaziv());
+		}
+
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+		TypedQuery<KorisnickiNalog> q = em.createQuery("select k from KorisnickiNalog k  where k.tipK = ? AND  k.username !=? ",
+				KorisnickiNalog.class);
+		q.setParameter(1, TipKorisnika.doktor);
+		q.setParameter(2, "doktor");
+		List<KorisnickiNalog> lista3 = q.getResultList();
+		for (KorisnickiNalog k : lista3)
+		{
+			cmbUsername.dodajStavku(k, k.getUsername());
+		}
+		em.close();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Novi doktor");
+		setSize(324, 277);
+
+	}
+}

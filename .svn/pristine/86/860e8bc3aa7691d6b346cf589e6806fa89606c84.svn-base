@@ -1,0 +1,152 @@
+package ui;
+
+import helper.Konekcija;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import model.Zvanje;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmZvanja extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmZvanja shell = new frmZvanja(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private Label lblNazivZvanja;
+	private Text txtZvanje;
+	private Button btnSacuvaj;
+
+	private Button btnOdustani;
+	private Label lblDodajNovoZvanje;
+	private Label lblDodajZvanje;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmZvanja(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmZvanja.class, "/ui/slike/Button-Add-icon.png"));
+
+		lblNazivZvanja = new Label(this, SWT.NONE);
+		lblNazivZvanja.setBounds(15, 74, 94, 15);
+		lblNazivZvanja.setText("Naziv zvanja:");
+
+		txtZvanje = new Text(this, SWT.BORDER);
+		txtZvanje.setBounds(115, 71, 170, 21);
+
+		btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Zvanje zvanje = new Zvanje();
+				String Zvanje = txtZvanje.getText();
+				zvanje.setNaziv(Zvanje);
+
+				EntityManager em = Konekcija.getEmf().createEntityManager();
+				TypedQuery<Zvanje> q = em.createQuery("select k from Zvanje k  where k.Naziv = ?", Zvanje.class);
+				q.setParameter(1, Zvanje);
+				List<Zvanje> lista = q.getResultList();
+				em.close();
+
+				if (Zvanje.isEmpty())
+				{
+					MessageDialog.openError(null, "Greška", "Polje naziv je obavezno za unos !");
+					return;
+				}
+				if (lista.size() == 0)
+				{
+					Dodavanje.DodajZvanje(zvanje);
+					MessageDialog.openInformation(null, "Informacija", "Zvanje uspješno dodato!");
+					close();
+				} else
+				{
+					MessageDialog.openError(null, "Greška", "To zvanje je veæ unešeno u bazu podataka!");
+					return;
+				}
+			}
+		});
+		btnSacuvaj.setBounds(115, 109, 71, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(214, 109, 71, 25);
+		btnOdustani.setText("Odustani");
+
+		lblDodajNovoZvanje = new Label(this, SWT.NONE);
+		lblDodajNovoZvanje.setText("Dodaj novo zvanje:");
+		lblDodajNovoZvanje.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblDodajNovoZvanje.setBounds(115, 27, 179, 38);
+
+		lblDodajZvanje = new Label(this, SWT.NONE);
+		lblDodajZvanje.setImage(SWTResourceManager.getImage(frmZvanja.class, "/ui/slike/Addfrm.png"));
+		lblDodajZvanje.setBounds(15, 10, 55, 58);
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Unos zvanja");
+		setSize(304, 173);
+
+	}
+}

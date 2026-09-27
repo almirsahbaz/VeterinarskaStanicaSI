@@ -1,0 +1,702 @@
+package ui;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmGlavnaAdministrator extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void otvori()
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmGlavnaAdministrator shell = new frmGlavnaAdministrator(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblTrenutnoLogiraniKorisnik;
+	private final MenuItem mntmUpravljanjeKorisnicima;
+	private final Menu menu_1;
+
+	private final MenuItem mntmKreirajKorisnikiNalog;
+	private final MenuItem mntmPretragaPoImenu;
+	private final MenuItem mntmObriiKorisnika;
+	private final Menu menu_7;
+	private final Label label;
+	private final Label lblAdministratori;
+	private final Button btnDodajAdmina;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmGlavnaAdministrator(Display display)
+	{
+		super(display, SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/admin-icon.png"));
+
+		lblTrenutnoLogiraniKorisnik = new Label(this, SWT.NONE);
+		lblTrenutnoLogiraniKorisnik.setBounds(10, 235, 130, 15);
+		lblTrenutnoLogiraniKorisnik.setForeground(SWTResourceManager.getColor(65, 105, 225));
+		lblTrenutnoLogiraniKorisnik.setFont(SWTResourceManager.getFont("Arial", 8, SWT.NORMAL));
+		lblTrenutnoLogiraniKorisnik.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		lblTrenutnoLogiraniKorisnik.setText("Dobrodo\u0161li:");
+		lblTrenutnoLogiraniKorisnik.setText(lblTrenutnoLogiraniKorisnik.getText() + " " + Sesija.logiraniKorisnik.getUsername());
+
+		Menu menu = new Menu(this, SWT.BAR);
+		setMenuBar(menu);
+
+		MenuItem mntmKorisnik = new MenuItem(menu, SWT.CASCADE);
+		mntmKorisnik.setText("Korisnik");
+
+		Menu menu_4 = new Menu(mntmKorisnik);
+		mntmKorisnik.setMenu(menu_4);
+
+		MenuItem mntmLogOut = new MenuItem(menu_4, SWT.NONE);
+		mntmLogOut.addSelectionListener(new SelectionAdapter()
+		{
+			@SuppressWarnings("static-access")
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				_Starter login = new _Starter();
+				close();
+				login.main(null);
+
+			}
+		});
+		mntmLogOut.setText("Log out");
+
+		new MenuItem(menu_4, SWT.SEPARATOR);
+
+		MenuItem mntmExit = new MenuItem(menu_4, SWT.NONE);
+		mntmExit.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		mntmExit.setText("Exit");
+
+		new MenuItem(menu_4, SWT.SEPARATOR);
+
+		mntmUpravljanjeKorisnicima = new MenuItem(menu, SWT.CASCADE);
+		mntmUpravljanjeKorisnicima.setText("Upravljanje korisnicima");
+
+		menu_1 = new Menu(mntmUpravljanjeKorisnicima);
+		mntmUpravljanjeKorisnicima.setMenu(menu_1);
+
+		mntmKreirajKorisnikiNalog = new MenuItem(menu_1, SWT.NONE);
+		mntmKreirajKorisnikiNalog.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmDodajKorisnickiNalog frm = new frmDodajKorisnickiNalog(null);
+				frm.open();
+			}
+		});
+		mntmKreirajKorisnikiNalog.setText("Kreiraj korisni\u010Dki nalog");
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmObriiKorisnikiNalog = new MenuItem(menu_1, SWT.NONE);
+		mntmObriiKorisnikiNalog.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmAktivacijaNaloga frm = new frmAktivacijaNaloga(null);
+				frm.open();
+			}
+		});
+		mntmObriiKorisnikiNalog.setText("Aktivacija/Deaktivacija korisni\u010Dkih naloga");
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmDodajNovogKorisnika = new MenuItem(menu_1, SWT.CASCADE);
+		mntmDodajNovogKorisnika.setText("Dodaj novog korisnika");
+
+		Menu menu_2 = new Menu(mntmDodajNovogKorisnika);
+		mntmDodajNovogKorisnika.setMenu(menu_2);
+
+		MenuItem mntmDodajNovogAdministratora = new MenuItem(menu_2, SWT.NONE);
+		mntmDodajNovogAdministratora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmDodajAdministratora frm = new frmDodajAdministratora(null);
+				frm.open();
+			}
+		});
+		mntmDodajNovogAdministratora.setText("Dodaj novog administratora");
+
+		new MenuItem(menu_2, SWT.SEPARATOR);
+
+		MenuItem mntmDodajNovogDoktora = new MenuItem(menu_2, SWT.NONE);
+		mntmDodajNovogDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmDodajDoktora frm = new frmDodajDoktora(null);
+				frm.open();
+			}
+		});
+		mntmDodajNovogDoktora.setText("Dodaj novog doktora");
+
+		new MenuItem(menu_2, SWT.SEPARATOR);
+
+		MenuItem mntmDodajNovoTehniko = new MenuItem(menu_2, SWT.NONE);
+		mntmDodajNovoTehniko.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmDodajTehnickoOsoblje frm = new frmDodajTehnickoOsoblje(null);
+				frm.open();
+			}
+		});
+		mntmDodajNovoTehniko.setText("Dodaj novo tehni\u010Dko osoblje");
+
+		new MenuItem(menu_2, SWT.SEPARATOR);
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		mntmObriiKorisnika = new MenuItem(menu_1, SWT.CASCADE);
+		mntmObriiKorisnika.setText("Obri\u0161i korisnika");
+
+		menu_7 = new Menu(mntmObriiKorisnika);
+		mntmObriiKorisnika.setMenu(menu_7);
+
+		MenuItem mntmObriiAdministratora = new MenuItem(menu_7, SWT.NONE);
+		mntmObriiAdministratora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmObrisiAdministratora frm = new frmObrisiAdministratora(null);
+				frm.open();
+			}
+		});
+		mntmObriiAdministratora.setText("Obri\u0161i administratora");
+
+		new MenuItem(menu_7, SWT.SEPARATOR);
+
+		MenuItem mntmObriiDoktora = new MenuItem(menu_7, SWT.NONE);
+		mntmObriiDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmObrisiDoktora frm = new frmObrisiDoktora(null);
+				frm.open();
+			}
+		});
+		mntmObriiDoktora.setText("Obri\u0161i doktora");
+
+		new MenuItem(menu_7, SWT.SEPARATOR);
+
+		MenuItem mntmObriiTehnikoOsoblje = new MenuItem(menu_7, SWT.NONE);
+		mntmObriiTehnikoOsoblje.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmObrisiTehnickoOsoblje frm = new frmObrisiTehnickoOsoblje(null);
+				frm.open();
+			}
+		});
+		mntmObriiTehnikoOsoblje.setText("Obri\u0161i tehni\u010Dko osoblje");
+
+		new MenuItem(menu_7, SWT.SEPARATOR);
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmPregledKorisnika = new MenuItem(menu_1, SWT.CASCADE);
+		mntmPregledKorisnika.setText("Pregled korisnika");
+
+		Menu menu_5 = new Menu(mntmPregledKorisnika);
+		mntmPregledKorisnika.setMenu(menu_5);
+
+		MenuItem mntmPregledAdministratora = new MenuItem(menu_5, SWT.NONE);
+		mntmPregledAdministratora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPregledAdministratora frm = new frmPregledAdministratora(null);
+				frm.open();
+			}
+		});
+		mntmPregledAdministratora.setText("Pregled administratora");
+
+		new MenuItem(menu_5, SWT.SEPARATOR);
+
+		MenuItem mntmPregledDoktora = new MenuItem(menu_5, SWT.NONE);
+		mntmPregledDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPregledDoktora frm = new frmPregledDoktora(null);
+				frm.open();
+			}
+		});
+		mntmPregledDoktora.setText("Pregled doktora");
+
+		new MenuItem(menu_5, SWT.SEPARATOR);
+
+		MenuItem mntmPregledTehnikogOsoblja = new MenuItem(menu_5, SWT.NONE);
+		mntmPregledTehnikogOsoblja.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPregledTehnickogOsoblja frm = new frmPregledTehnickogOsoblja(null);
+				frm.open();
+			}
+		});
+
+		mntmPregledTehnikogOsoblja.setText("Pregled tehni\u010Dkog osoblja");
+
+		new MenuItem(menu_5, SWT.SEPARATOR);
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmPretragaKorisnika = new MenuItem(menu_1, SWT.CASCADE);
+		mntmPretragaKorisnika.setText("Pretraga korisnika");
+
+		Menu menu_3 = new Menu(mntmPretragaKorisnika);
+		mntmPretragaKorisnika.setMenu(menu_3);
+
+		mntmPretragaPoImenu = new MenuItem(menu_3, SWT.NONE);
+		mntmPretragaPoImenu.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPretragaAdmin frm = new frmPretragaAdmin(null);
+				frm.open();
+			}
+		});
+		mntmPretragaPoImenu.setText("Pretraga administratora");
+
+		new MenuItem(menu_3, SWT.SEPARATOR);
+
+		MenuItem mntmPretragaDoktora = new MenuItem(menu_3, SWT.NONE);
+		mntmPretragaDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPretragaDoktora frm = new frmPretragaDoktora(null);
+				frm.open();
+			}
+		});
+		mntmPretragaDoktora.setText("Pretraga doktora");
+
+		new MenuItem(menu_3, SWT.SEPARATOR);
+
+		MenuItem mntmPretragaTehnikogOsobolja = new MenuItem(menu_3, SWT.NONE);
+		mntmPretragaTehnikogOsobolja.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmPretragaTehnickogOsoblja frm = new frmPretragaTehnickogOsoblja(null);
+				frm.open();
+			}
+		});
+		mntmPretragaTehnikogOsobolja.setText("Pretraga tehni\u010Dkog osoblja");
+
+		new MenuItem(menu_3, SWT.SEPARATOR);
+
+		new MenuItem(menu_1, SWT.SEPARATOR);
+
+		MenuItem mntmUnosNovihPodataka = new MenuItem(menu, SWT.CASCADE);
+		mntmUnosNovihPodataka.setText("Unos novih podataka");
+
+		Menu menu_6 = new Menu(mntmUnosNovihPodataka);
+		mntmUnosNovihPodataka.setMenu(menu_6);
+
+		MenuItem mntmNewItem = new MenuItem(menu_6, SWT.NONE);
+		mntmNewItem.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmGradovi frm = new frmGradovi(null);
+				frm.open();
+			}
+		});
+		mntmNewItem.setText("Unos gradova");
+
+		new MenuItem(menu_6, SWT.SEPARATOR);
+
+		MenuItem mntmUnosOdjela = new MenuItem(menu_6, SWT.NONE);
+		mntmUnosOdjela.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmOdjeli frm = new frmOdjeli(null);
+				frm.open();
+			}
+		});
+		mntmUnosOdjela.setText("Unos odjela");
+
+		new MenuItem(menu_6, SWT.SEPARATOR);
+
+		MenuItem mntmUnosStrunihSprema = new MenuItem(menu_6, SWT.NONE);
+		mntmUnosStrunihSprema.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmStrucneSpreme frm = new frmStrucneSpreme(null);
+				frm.open();
+			}
+		});
+		mntmUnosStrunihSprema.setText("Unos stru\u010Dnih sprema");
+
+		new MenuItem(menu_6, SWT.SEPARATOR);
+
+		MenuItem mntmUnosZvanja = new MenuItem(menu_6, SWT.NONE);
+		mntmUnosZvanja.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				frmZvanja frm = new frmZvanja(null);
+				frm.open();
+			}
+		});
+		mntmUnosZvanja.setText("Unos zvanja");
+
+		new MenuItem(menu_6, SWT.SEPARATOR);
+
+		label = new Label(this, SWT.NONE);
+		label.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/adminVe-icon.png"));
+		label.setBounds(10, 68, 116, 170);
+
+		lblAdministratori = new Label(this, SWT.NONE);
+		lblAdministratori.setBounds(148, 72, 188, 19);
+		lblAdministratori.setFont(SWTResourceManager.getFont("Arial", 12, SWT.BOLD));
+		lblAdministratori.setText("Administratori:");
+
+		btnDodajAdmina = new Button(this, SWT.NONE);
+		btnDodajAdmina.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnDodajAdmina_widgetSelected(arg0);
+			}
+		});
+		btnDodajAdmina.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/admin-Add.png"));
+		btnDodajAdmina.setBounds(148, 93, 60, 52);
+
+		Button btnBrisiAdmina = new Button(this, SWT.NONE);
+		btnBrisiAdmina.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnBrisiAdmina_widgetSelected(arg0);
+			}
+		});
+		btnBrisiAdmina.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/adminDelete.png"));
+		btnBrisiAdmina.setBounds(214, 93, 60, 52);
+
+		Button btnTraziAdmina = new Button(this, SWT.NONE);
+		btnTraziAdmina.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnTraziAdmina_widgetSelected(arg0);
+			}
+		});
+		btnTraziAdmina.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/adminSearch.png"));
+		btnTraziAdmina.setBounds(280, 93, 56, 52);
+
+		Button btnPregledAdmina = new Button(this, SWT.NONE);
+		btnPregledAdmina.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnPregledAdmina_widgetSelected(arg0);
+			}
+		});
+		btnPregledAdmina.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/adminView.png"));
+		btnPregledAdmina.setBounds(342, 93, 56, 52);
+
+		Label lblKorisnikiNalozi = new Label(this, SWT.NONE);
+		lblKorisnikiNalozi.setFont(SWTResourceManager.getFont("Arial", 12, SWT.BOLD));
+		lblKorisnikiNalozi.setBounds(148, 0, 188, 19);
+		lblKorisnikiNalozi.setText("Korisni\u010Dki nalozi:");
+
+		Button btnNalog = new Button(this, SWT.NONE);
+		btnNalog.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnNalog_widgetSelected(arg0);
+			}
+		});
+		btnNalog.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/nalogAdd.png"));
+		btnNalog.setBounds(148, 20, 60, 52);
+
+		Button btnActivate = new Button(this, SWT.NONE);
+		btnActivate.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnActivate_widgetSelected(arg0);
+			}
+		});
+		btnActivate.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/Activate.png"));
+		btnActivate.setBounds(214, 20, 60, 52);
+
+		Label lblDoktori = new Label(this, SWT.NONE);
+		lblDoktori.setText("Doktori:");
+		lblDoktori.setFont(SWTResourceManager.getFont("Arial", 12, SWT.BOLD));
+		lblDoktori.setBounds(148, 146, 188, 19);
+
+		Button btnDodajDoktora = new Button(this, SWT.NONE);
+		btnDodajDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnDodajDoktora_widgetSelected(arg0);
+			}
+		});
+		btnDodajDoktora.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/doctorAdd.png"));
+		btnDodajDoktora.setBounds(148, 166, 60, 52);
+
+		Button btnBrisiDoktora = new Button(this, SWT.NONE);
+		btnBrisiDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnBrisiDoktora_widgetSelected(arg0);
+			}
+		});
+		btnBrisiDoktora.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/doctorDelete.png"));
+		btnBrisiDoktora.setBounds(214, 166, 60, 52);
+
+		Button btnTraziDoktora = new Button(this, SWT.NONE);
+		btnTraziDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnTraziDoktora_widgetSelected(arg0);
+			}
+		});
+		btnTraziDoktora.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/doctorSearch.png"));
+		btnTraziDoktora.setBounds(280, 166, 56, 52);
+
+		Button btnPregledDoktora = new Button(this, SWT.NONE);
+		btnPregledDoktora.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnPregledDoktora_widgetSelected(arg0);
+			}
+		});
+		btnPregledDoktora.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/doctorView.png"));
+		btnPregledDoktora.setBounds(342, 166, 56, 52);
+
+		Label lblTehnikoOsoblje = new Label(this, SWT.NONE);
+		lblTehnikoOsoblje.setText("Tehni\u010Dko osoblje:");
+		lblTehnikoOsoblje.setFont(SWTResourceManager.getFont("Arial", 12, SWT.BOLD));
+		lblTehnikoOsoblje.setBounds(148, 219, 188, 19);
+
+		Button btnDodajTehnicko = new Button(this, SWT.NONE);
+		btnDodajTehnicko.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnDodajTehnicko_widgetSelected(arg0);
+			}
+		});
+		btnDodajTehnicko.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/Tehnicko-Add.png"));
+		btnDodajTehnicko.setBounds(148, 238, 60, 52);
+
+		Button btnBrisiTehnicko = new Button(this, SWT.NONE);
+		btnBrisiTehnicko.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnBrisiTehnicko_widgetSelected(arg0);
+			}
+		});
+		btnBrisiTehnicko.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/Tehnicko-Delete.png"));
+		btnBrisiTehnicko.setBounds(214, 238, 60, 52);
+
+		Button btnTraziTehnicko = new Button(this, SWT.NONE);
+		btnTraziTehnicko.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnTraziTehnicko_widgetSelected(arg0);
+			}
+		});
+		btnTraziTehnicko.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/Tehnicko-Search.png"));
+		btnTraziTehnicko.setBounds(280, 238, 56, 52);
+
+		Button btnPregledTehnicko = new Button(this, SWT.NONE);
+		btnPregledTehnicko.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnPregledTehnicko_widgetSelected(arg0);
+			}
+		});
+		btnPregledTehnicko.setImage(SWTResourceManager.getImage(frmGlavnaAdministrator.class, "/ui/slike/Tehnicko-View.png"));
+		btnPregledTehnicko.setBounds(342, 238, 56, 52);
+
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Administrator::Glavna forma");
+		setSize(416, 349);
+
+	}
+
+	protected void do_btnActivate_widgetSelected(SelectionEvent arg0)
+	{
+		frmAktivacijaNaloga frm = new frmAktivacijaNaloga(null);
+		frm.open();
+	}
+
+	protected void do_btnBrisiAdmina_widgetSelected(SelectionEvent arg0)
+	{
+		frmObrisiAdministratora frm = new frmObrisiAdministratora(null);
+		frm.open();
+	}
+
+	protected void do_btnBrisiDoktora_widgetSelected(SelectionEvent arg0)
+	{
+		frmObrisiDoktora frm = new frmObrisiDoktora(null);
+		frm.open();
+	}
+
+	protected void do_btnBrisiTehnicko_widgetSelected(SelectionEvent arg0)
+	{
+		frmObrisiTehnickoOsoblje frm = new frmObrisiTehnickoOsoblje(null);
+		frm.open();
+	}
+
+	protected void do_btnDodajAdmina_widgetSelected(SelectionEvent arg0)
+	{
+		frmDodajAdministratora frm = new frmDodajAdministratora(null);
+		frm.open();
+	}
+
+	protected void do_btnDodajDoktora_widgetSelected(SelectionEvent arg0)
+	{
+		frmDodajDoktora frm = new frmDodajDoktora(null);
+		frm.open();
+	}
+
+	protected void do_btnDodajTehnicko_widgetSelected(SelectionEvent arg0)
+	{
+		frmDodajTehnickoOsoblje frm = new frmDodajTehnickoOsoblje(null);
+		frm.open();
+	}
+
+	protected void do_btnNalog_widgetSelected(SelectionEvent arg0)
+	{
+		frmDodajKorisnickiNalog frm = new frmDodajKorisnickiNalog(null);
+		frm.open();
+	}
+
+	protected void do_btnPregledAdmina_widgetSelected(SelectionEvent arg0)
+	{
+		frmPregledAdministratora frm = new frmPregledAdministratora(null);
+		frm.open();
+	}
+
+	protected void do_btnPregledDoktora_widgetSelected(SelectionEvent arg0)
+	{
+		frmPregledDoktora frm = new frmPregledDoktora(null);
+		frm.open();
+	}
+
+	protected void do_btnPregledTehnicko_widgetSelected(SelectionEvent arg0)
+	{
+		frmPregledTehnickogOsoblja frm = new frmPregledTehnickogOsoblja(null);
+		frm.open();
+	}
+
+	protected void do_btnTraziAdmina_widgetSelected(SelectionEvent arg0)
+	{
+		frmPretragaAdmin frm = new frmPretragaAdmin(null);
+		frm.open();
+	}
+
+	protected void do_btnTraziDoktora_widgetSelected(SelectionEvent arg0)
+	{
+		frmPretragaDoktora frm = new frmPretragaDoktora(null);
+		frm.open();
+	}
+
+	protected void do_btnTraziTehnicko_widgetSelected(SelectionEvent arg0)
+	{
+		frmPretragaTehnickogOsoblja frm = new frmPretragaTehnickogOsoblja(null);
+		frm.open();
+	}
+}

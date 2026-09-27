@@ -1,0 +1,126 @@
+package ui;
+
+import model.Vlasnik;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
+import servis.Dodavanje;
+
+public class frmDodajVlasnika extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajVlasnika shell = new frmDodajVlasnika(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtIme;
+
+	private final Text txtPrezime;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmDodajVlasnika(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.TITLE);
+		setLayout(null);
+
+		Button btnSauvaj = new Button(this, SWT.NONE);
+		btnSauvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Vlasnik v = new Vlasnik();
+				v.setIme(txtIme.getText());
+				v.setPrezime(txtPrezime.getText());
+				if (txtIme.getText() == "" || txtPrezime.getText() == "")
+				{
+					MessageDialog.openError(null, "Greska", "Polja ne smiju biti prazna");
+					return;
+				} else
+				{
+					Dodavanje.dodajvlasnika(v);
+					MessageDialog.openInformation(null, "Informacija", "Vlasnik dodat");
+					close();
+				}
+			}
+		});
+		btnSauvaj.setBounds(71, 114, 75, 25);
+		btnSauvaj.setText("Sa\u010Duvaj");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(164, 114, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		Label lblIme = new Label(this, SWT.NONE);
+		lblIme.setBounds(10, 20, 55, 15);
+		lblIme.setText("Ime :");
+
+		Label lblPrezime = new Label(this, SWT.NONE);
+		lblPrezime.setBounds(10, 64, 55, 15);
+		lblPrezime.setText("Prezime :");
+
+		txtIme = new Text(this, SWT.BORDER);
+		txtIme.setBounds(71, 17, 168, 21);
+
+		txtPrezime = new Text(this, SWT.BORDER);
+		txtPrezime.setBounds(71, 61, 168, 21);
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Dodaj vlasnika");
+		setSize(265, 185);
+
+	}
+}

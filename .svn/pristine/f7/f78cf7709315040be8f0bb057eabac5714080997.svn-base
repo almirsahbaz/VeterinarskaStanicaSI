@@ -1,0 +1,115 @@
+package ui;
+
+import helper.DAO;
+import model.Pacijent;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmPregledPacijenata extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmPregledPacijenata shell = new frmPregledPacijenata(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Table tblPacijenti;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmPregledPacijenata(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmPregledPacijenata.class, "/ui/slike/search-b-icon.png"));
+		setLayout(null);
+
+		tblPacijenti = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		tblPacijenti.setBounds(10, 10, 429, 250);
+		tblPacijenti.setHeaderVisible(true);
+		tblPacijenti.setLinesVisible(true);
+
+		TableColumn tblclmnIme = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnIme.setWidth(65);
+		tblclmnIme.setText("Ime");
+
+		TableColumn tblclmnVlasnik = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnVlasnik.setWidth(62);
+		tblclmnVlasnik.setText("Vlasnik");
+
+		TableColumn tblclmnOsoblje = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnOsoblje.setWidth(69);
+		tblclmnOsoblje.setText("Osoblje");
+
+		TableColumn tblclmnVrsta = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnVrsta.setWidth(63);
+		tblclmnVrsta.setText("Vrsta");
+
+		TableColumn tblclmnGodite = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnGodite.setWidth(82);
+		tblclmnGodite.setText("Godi\u0161te");
+
+		TableColumn tblclmnNewColumn = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnNewColumn.setWidth(84);
+		tblclmnNewColumn.setText("Dat. prijema");
+
+		TableColumn tblclmnNewColumn_1 = new TableColumn(tblPacijenti, SWT.NONE);
+		tblclmnNewColumn_1.setWidth(-7);
+		tblclmnNewColumn_1.setText("New Column");
+		createContents();
+		for (Pacijent p : DAO.getAll(Pacijent.class))
+		{
+			final TableItem tblI = new TableItem(tblPacijenti, SWT.None);
+			tblI.setText(0, p.getIme());
+			tblI.setText(1, p.getVlasnik().getIme());
+			tblI.setText(2, p.getTehnicko_osoblje().getVrsta_posla());
+			tblI.setText(3, p.getVrsta().getImeVrste());
+			tblI.setText(4, p.getGodiste().toString());
+			tblI.setText(5, p.getDatumPrijema().toString());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Pregled pacijenata");
+		setSize(453, 296);
+
+	}
+}

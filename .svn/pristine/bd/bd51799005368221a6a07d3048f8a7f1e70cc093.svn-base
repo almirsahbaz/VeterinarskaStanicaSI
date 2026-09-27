@@ -1,0 +1,204 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+
+import java.util.List;
+
+import model.KorisnickiNalog;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmAktivacijaNaloga extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmAktivacijaNaloga shell = new frmAktivacijaNaloga(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblKorisnickiNalog;
+	private final MojComboBox cmbKorisnickiNalog;
+
+	private final Button btnOdustani;
+	private final Label lblAktiviraj;
+	private final Label lblDeaktiviraj;
+	private final Button chkAktiviraj;
+	private final Button chkDeaktiviraj;
+	private final Button btnAktiviraj;
+	private final Label lblAktivacijadeaktivacijaKorisnikihNaloga;
+	private final Label lblAktivacija;
+	private final Label lblKorisnikihNaloga;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmAktivacijaNaloga(Display display)
+	{
+		super(display, SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmAktivacijaNaloga.class, "/ui/slike/Actions-dialog-ok-apply-icon.png"));
+
+		lblKorisnickiNalog = new Label(this, SWT.NONE);
+		lblKorisnickiNalog.setBounds(20, 83, 112, 15);
+		lblKorisnickiNalog.setText("Korisni\u010Dki nalog:");
+
+		cmbKorisnickiNalog = new MojComboBox(this, SWT.READ_ONLY);
+		cmbKorisnickiNalog.setBounds(138, 80, 156, 23);
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setBounds(219, 193, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		lblAktiviraj = new Label(this, SWT.NONE);
+		lblAktiviraj.setBounds(20, 116, 55, 15);
+		lblAktiviraj.setText("Aktiviraj :");
+
+		lblDeaktiviraj = new Label(this, SWT.NONE);
+		lblDeaktiviraj.setBounds(20, 152, 61, 15);
+		lblDeaktiviraj.setText("Deaktiviraj :");
+
+		chkAktiviraj = new Button(this, SWT.CHECK);
+		chkAktiviraj.setBounds(201, 115, 93, 16);
+
+		chkDeaktiviraj = new Button(this, SWT.CHECK);
+		chkDeaktiviraj.setBounds(201, 151, 93, 16);
+
+		btnAktiviraj = new Button(this, SWT.NONE);
+		btnAktiviraj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnAktiviraj_widgetSelected(arg0);
+			}
+		});
+		btnAktiviraj.setBounds(138, 193, 75, 25);
+		btnAktiviraj.setText("Sa\u010Duvaj");
+
+		lblAktivacijadeaktivacijaKorisnikihNaloga = new Label(this, SWT.NONE);
+		lblAktivacijadeaktivacijaKorisnikihNaloga.setText("Aktivacija/Deaktivacija");
+		lblAktivacijadeaktivacijaKorisnikihNaloga.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblAktivacijadeaktivacijaKorisnikihNaloga.setBounds(136, 23, 168, 15);
+
+		lblAktivacija = new Label(this, SWT.NONE);
+		lblAktivacija.setImage(SWTResourceManager.getImage(frmAktivacijaNaloga.class, "/ui/slike/Activate.png"));
+		lblAktivacija.setBounds(20, 10, 55, 58);
+
+		lblKorisnikihNaloga = new Label(this, SWT.NONE);
+		lblKorisnikihNaloga.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblKorisnikihNaloga.setBounds(136, 44, 168, 23);
+		lblKorisnikihNaloga.setText("korisni\u010Dkih naloga:");
+		createContents();
+		List<KorisnickiNalog> lista = DAO.getAll(KorisnickiNalog.class);
+		for (KorisnickiNalog k : lista)
+		{
+			cmbKorisnickiNalog.dodajStavku(k, k.getUsername());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Aktivacija/Deaktivacija naloga");
+		setSize(310, 256);
+
+	}
+
+	protected void do_btnAktiviraj_widgetSelected(SelectionEvent arg0)
+	{
+		KorisnickiNalog k = cmbKorisnickiNalog.uzmiOznacenuStavku(KorisnickiNalog.class);
+		if (cmbKorisnickiNalog.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Morate odabrati korisnièki nalog koji želite deaktivirati!");
+			return;
+		}
+		Boolean Aktiviran = chkAktiviraj.getSelection();
+		Boolean Deaktiviran = chkDeaktiviraj.getSelection();
+		if (cmbKorisnickiNalog.getText() == "" || (Aktiviran == false && Deaktiviran == false))
+		{
+			MessageDialog.openInformation(null, "Informacija", "Niste selektovali sva potrebna polja!");
+			return;
+		}
+		if (Aktiviran == true && Deaktiviran == true)
+		{
+			MessageDialog.openInformation(null, "Informacija", "Morate izabrati samo jednu ponuðenu opciju!");
+			return;
+		}
+		if (Deaktiviran == true && k.getIsAktivan() == false)
+		{
+			MessageDialog.openInformation(null, "Informacija", "Korisnièki nalog nije aktivan!");
+			return;
+		}
+		if (Deaktiviran == true && k.getIsAktivan() == true)
+		{
+			k.setIsAktivan(false);
+			DAO.update(k);
+			MessageDialog.openInformation(null, "Informacija", "Korisnièki nalog uspješno deaktiviran!");
+			close();
+		}
+		if (Aktiviran == true && k.getIsAktivan() == true)
+		{
+			MessageDialog.openInformation(null, "Informacija", "Korisnièki nalog je veæ aktivan!");
+			return;
+		}
+		if (Aktiviran == true && k.getIsAktivan() == false)
+		{
+			k.setIsAktivan(true);
+			DAO.update(k);
+			MessageDialog.openInformation(null, "Informacija", "Korisnièki nalog uspješno aktiviran!");
+			close();
+		}
+
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		close();
+	}
+}

@@ -1,0 +1,123 @@
+package ui;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmDodajDijagnozu extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void otvori()
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajDijagnozu shell = new frmDodajDijagnozu(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtSifraDijagnoze;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmDodajDijagnozu(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmDodajDijagnozu.class, "/ui/slike/Button-Add-icon.png"));
+		setLayout(null);
+
+		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setBounds(10, 57, 93, 15);
+		lblNewLabel.setText("\u0160ifra dijagnoze : ");
+
+		Label lblNazivDijagnoze = new Label(this, SWT.NONE);
+		lblNazivDijagnoze.setBounds(10, 24, 93, 15);
+		lblNazivDijagnoze.setText("Naziv dijagnoze : ");
+
+		txtSifraDijagnoze = new Text(this, SWT.BORDER);
+		txtSifraDijagnoze.setBounds(127, 54, 167, 21);
+
+		final Text txtNazivDijagnoze = new Text(this, SWT.BORDER);
+		txtNazivDijagnoze.setBounds(127, 21, 167, 21);
+
+		Button btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				String naziv = txtNazivDijagnoze.getText();
+				String sifra = txtSifraDijagnoze.getText();
+				if (naziv.isEmpty() || sifra.isEmpty())
+				{
+					MessageDialog.openError(null, "Greska", "Polje naziv i/ili šifra ne smije biti prazno!");
+					return;
+				}
+				if (naziv.length() < 4 || sifra.length() < 4)
+					MessageDialog.openError(null, "Greška", "Polje naziv i šifra moraju biti dužine minimmalno 4 karaktera!");
+				else
+					Dodavanje.DodajDijagnozu(naziv, sifra);
+			}
+		});
+		btnSacuvaj.setBounds(127, 94, 75, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(219, 94, 75, 25);
+		btnOdustani.setText("Odustani");
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Doktor::Unos dijagnoza");
+		setSize(322, 164);
+
+	}
+
+}

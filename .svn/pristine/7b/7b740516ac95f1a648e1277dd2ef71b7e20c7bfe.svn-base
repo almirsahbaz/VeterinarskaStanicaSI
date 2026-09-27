@@ -1,0 +1,224 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+
+import java.util.List;
+
+import model.Administrator;
+import model.Gradovi;
+import model.StrucneSpreme;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmIzmijeniAdmina extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmIzmijeniAdmina shell = new frmIzmijeniAdmina(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblUsername;
+	private final MojComboBox cmbUsername;
+	private final Label lblIme;
+	private final Text txtIme;
+	private final Label lblPrezime;
+	private final Text txtPrezime;
+	private final Label lblStrucnaSprema;
+	private final MojComboBox cmbStrucnaSprema;
+	private final Label lblGrad;
+	private final MojComboBox cmbGradovi;
+	private final Button btnSacuvaj;
+
+	private final Button btnOdustani;
+	private Label lblIzmijeniAdministratora;
+	private Label lblIzmijeniAdmina;
+	private Label lblOAdministratoru;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmIzmijeniAdmina(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmIzmijeniAdmina.class, "/ui/slike/admin-icon.png"));
+
+		lblUsername = new Label(this, SWT.NONE);
+		lblUsername.setBounds(21, 102, 105, 15);
+		lblUsername.setText("Username:");
+
+		cmbUsername = new MojComboBox(this, SWT.READ_ONLY);
+		cmbUsername.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_cmbUsername_widgetSelected(arg0);
+			}
+		});
+		cmbUsername.setBounds(132, 99, 153, 23);
+
+		lblIme = new Label(this, SWT.NONE);
+		lblIme.setBounds(21, 139, 105, 15);
+		lblIme.setText("Ime:");
+
+		txtIme = new Text(this, SWT.BORDER);
+		txtIme.setBounds(132, 136, 153, 21);
+
+		lblPrezime = new Label(this, SWT.NONE);
+		lblPrezime.setBounds(21, 174, 55, 15);
+		lblPrezime.setText("Prezime:");
+
+		txtPrezime = new Text(this, SWT.BORDER);
+		txtPrezime.setBounds(132, 171, 153, 21);
+
+		lblStrucnaSprema = new Label(this, SWT.NONE);
+		lblStrucnaSprema.setBounds(21, 209, 105, 15);
+		lblStrucnaSprema.setText("Stru\u010Dna sprema:");
+
+		cmbStrucnaSprema = new MojComboBox(this, SWT.READ_ONLY);
+		cmbStrucnaSprema.setBounds(132, 206, 153, 23);
+
+		lblGrad = new Label(this, SWT.NONE);
+		lblGrad.setBounds(21, 246, 105, 15);
+		lblGrad.setText("Grad:");
+
+		cmbGradovi = new MojComboBox(this, SWT.READ_ONLY);
+		cmbGradovi.setBounds(132, 243, 153, 23);
+
+		btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Administrator admin = cmbUsername.uzmiOznacenuStavku(Administrator.class);
+				String Ime = txtIme.getText();
+				admin.setIme(Ime);
+				String Prezime = txtPrezime.getText();
+				admin.setPrezime(Prezime);
+				admin.setStrucnaSprema(cmbStrucnaSprema.uzmiOznacenuStavku(StrucneSpreme.class));
+				admin.set_Grad(cmbGradovi.uzmiOznacenuStavku(Gradovi.class));
+
+				if (txtIme.getText() == "" || txtPrezime.getText() == "" || cmbUsername.getText() == "" || cmbGradovi.getText() == ""
+						|| cmbStrucnaSprema.getText() == "")
+				{
+					MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos !");
+					return;
+				}
+
+				Dodavanje.IzmijeniAdmina(admin);
+				MessageDialog.openInformation(null, "Informacija", "Podaci o administratoru uspješno izmjenjeni!");
+				close();
+			}
+		});
+		btnSacuvaj.setBounds(132, 294, 75, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(210, 294, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		lblIzmijeniAdministratora = new Label(this, SWT.NONE);
+		lblIzmijeniAdministratora.setText("Izmjena podataka");
+		lblIzmijeniAdministratora.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblIzmijeniAdministratora.setBounds(144, 38, 130, 20);
+
+		lblIzmijeniAdmina = new Label(this, SWT.NONE);
+		lblIzmijeniAdmina.setImage(SWTResourceManager.getImage(frmIzmijeniAdmina.class, "/ui/slike/adminIzmjena.png"));
+		lblIzmijeniAdmina.setBounds(21, 22, 55, 58);
+
+		lblOAdministratoru = new Label(this, SWT.NONE);
+		lblOAdministratoru.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblOAdministratoru.setBounds(144, 57, 124, 23);
+		lblOAdministratoru.setText("o administratoru:");
+		createContents();
+
+		List<StrucneSpreme> lista = DAO.getAll(StrucneSpreme.class);
+		for (StrucneSpreme s : lista)
+		{
+			cmbStrucnaSprema.dodajStavku(s, s.getNaziv());
+		}
+
+		List<Gradovi> lista2 = DAO.getAll(Gradovi.class);
+		for (Gradovi g : lista2)
+		{
+			cmbGradovi.dodajStavku(g, g.getNaziv());
+		}
+
+		List<Administrator> lista3 = DAO.getAll(Administrator.class);
+		for (Administrator k : lista3)
+		{
+			cmbUsername.dodajStavku(k, k.getNalog().getUsername());
+
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Izmjena podataka - administrator");
+		setSize(313, 369);
+
+	}
+
+	protected void do_cmbUsername_widgetSelected(SelectionEvent arg0)
+	{
+		Administrator admin = cmbUsername.uzmiOznacenuStavku(Administrator.class);
+		txtIme.setText(admin.getIme());
+		txtPrezime.setText(admin.getPrezime());
+		cmbGradovi.setText(admin.get_Grad().getNaziv());
+		cmbStrucnaSprema.setText(admin.getStrucnaSprema().getNaziv());
+
+	}
+}

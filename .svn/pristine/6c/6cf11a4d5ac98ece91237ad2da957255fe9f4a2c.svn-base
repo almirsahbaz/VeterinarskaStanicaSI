@@ -1,0 +1,112 @@
+package model;
+
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+@Entity
+public class KorisnickiNalog
+{
+	public static enum TipKorisnika
+	{
+		doktor, tehnickoOsoblje, administrator
+	}
+
+	@Id
+	@GeneratedValue
+	private int KorisnickiNalogID;
+	private String username;
+	private String password;
+	private Boolean IsAktivan;
+
+	@Enumerated(EnumType.STRING)
+	private TipKorisnika tipK;
+
+	@ManyToOne
+	private Administrator administrator;
+
+	@ManyToOne
+	private Doktori doktor;
+
+	@ManyToOne
+	private Tehnicko_osoblje TehnickoOsoblje;
+
+	public Administrator getAdministrator()
+	{
+		return administrator;
+	}
+
+	public Doktori getDoktor()
+	{
+		return doktor;
+	}
+
+	public Boolean getIsAktivan()
+	{
+		return IsAktivan;
+	}
+
+	public int getKorisnickiNalogID()
+	{
+		return KorisnickiNalogID;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public Tehnicko_osoblje getTehnickoOsoblje()
+	{
+		return TehnickoOsoblje;
+	}
+
+	public TipKorisnika getTipK()
+	{
+		return tipK;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setAdministrator(Administrator administrator)
+	{
+		this.administrator = administrator;
+	}
+
+	public void setDoktor(Doktori doktor)
+	{
+		this.doktor = doktor;
+	}
+
+	public void setIsAktivan(Boolean isAktivan)
+	{
+		IsAktivan = isAktivan;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public void setTehnickoOsoblje(Tehnicko_osoblje tehnickoOsoblje)
+	{
+		TehnickoOsoblje = tehnickoOsoblje;
+	}
+
+	public void setTipK(TipKorisnika tipK)
+	{
+		this.tipK = tipK;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+}

@@ -1,0 +1,243 @@
+package ui;
+
+import helper.DAO;
+import helper.Konekcija;
+import helper.MojComboBox;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import model.Gradovi;
+import model.KorisnickiNalog;
+import model.KorisnickiNalog.TipKorisnika;
+import model.Odjeli;
+import model.Tehnicko_osoblje;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmDodajTehnickoOsoblje extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmDodajTehnickoOsoblje shell = new frmDodajTehnickoOsoblje(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Label lblVrstaPosla;
+	private final Label lblOdjel;
+	private final Label lblIme;
+	private final Label lblPrezime;
+	private final Label lblGrad;
+	private final Text txtVrstaPosla;
+	private final Button btnSacuvaj;
+	private final Button btnOdustani;
+	private final MojComboBox cmbOdjel;
+	private final Text txtIme;
+	private final Text txtPrezime;
+
+	private final MojComboBox cmbGradovi;
+	private Label lblUsername;
+	private MojComboBox cmbUsername;
+	private Label lblDodajTehnikoOsoblje;
+	private Label lblDodajTehnicko;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmDodajTehnickoOsoblje(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmDodajTehnickoOsoblje.class, "/ui/slike/Tehnicko-icon.png"));
+
+		lblVrstaPosla = new Label(this, SWT.NONE);
+		lblVrstaPosla.setBounds(10, 130, 108, 15);
+		lblVrstaPosla.setText("Vrsta posla:");
+
+		lblOdjel = new Label(this, SWT.NONE);
+		lblOdjel.setBounds(10, 157, 108, 15);
+		lblOdjel.setText("Odjel:");
+
+		lblIme = new Label(this, SWT.NONE);
+		lblIme.setBounds(10, 185, 108, 15);
+		lblIme.setText("Ime:");
+
+		lblPrezime = new Label(this, SWT.NONE);
+		lblPrezime.setBounds(10, 211, 108, 15);
+		lblPrezime.setText("Prezime:");
+
+		lblGrad = new Label(this, SWT.NONE);
+		lblGrad.setBounds(10, 238, 108, 15);
+		lblGrad.setText("Grad:");
+
+		txtVrstaPosla = new Text(this, SWT.BORDER);
+		txtVrstaPosla.setBounds(124, 127, 156, 21);
+
+		btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				if (cmbUsername.getText() == "")
+				{
+					MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos !");
+					return;
+				}
+				Tehnicko_osoblje tehnicko = new Tehnicko_osoblje();
+				tehnicko.setNalog(cmbUsername.uzmiOznacenuStavku(KorisnickiNalog.class));
+				tehnicko.setOdjel(cmbOdjel.uzmiOznacenuStavku(Odjeli.class));
+				String Vrsta = txtVrstaPosla.getText();
+				tehnicko.setVrsta_posla(Vrsta);
+				String Ime = txtIme.getText();
+				tehnicko.setIme(Ime);
+				String Prezime = txtPrezime.getText();
+				tehnicko.setPrezime(Prezime);
+				tehnicko.setGrad(cmbGradovi.uzmiOznacenuStavku(Gradovi.class));
+				KorisnickiNalog k = cmbUsername.uzmiOznacenuStavku(KorisnickiNalog.class);
+				Integer username = k.getKorisnickiNalogID();
+				if (Ime.isEmpty() || Prezime.isEmpty() || cmbUsername.getText() == "" || cmbGradovi.getText() == "" || cmbOdjel.getText() == ""
+						|| Vrsta.isEmpty())
+				{
+					MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos !");
+					return;
+				}
+
+				EntityManager em = Konekcija.getEmf().createEntityManager();
+				TypedQuery<Tehnicko_osoblje> q = em.createQuery("select k from Tehnicko_osoblje k  where k._nalog.KorisnickiNalogID = ?",
+						Tehnicko_osoblje.class);
+				q.setParameter(1, username);
+				List<Tehnicko_osoblje> lista = q.getResultList();
+				em.close();
+
+				if (lista.size() == 0)
+				{
+					Dodavanje.DodajTehnicko(tehnicko);
+					MessageDialog.openInformation(null, "Informacija", "Tehnièko osoblje uspješno dodato!");
+					close();
+				} else
+				{
+					MessageDialog.openError(null, "Greška", "Taj username je zauzet, odaberite drugi!");
+				}
+				lista.clear();
+			}
+		});
+		btnSacuvaj.setBounds(124, 276, 75, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(205, 276, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		cmbOdjel = new MojComboBox(this, SWT.READ_ONLY);
+		cmbOdjel.setBounds(124, 154, 156, 23);
+
+		txtIme = new Text(this, SWT.BORDER);
+		txtIme.setBounds(124, 182, 156, 21);
+
+		txtPrezime = new Text(this, SWT.BORDER);
+		txtPrezime.setBounds(124, 208, 156, 21);
+
+		cmbGradovi = new MojComboBox(this, SWT.READ_ONLY);
+		cmbGradovi.setBounds(124, 235, 156, 23);
+
+		lblUsername = new Label(this, SWT.NONE);
+		lblUsername.setBounds(10, 101, 108, 15);
+		lblUsername.setText("Username:");
+
+		cmbUsername = new MojComboBox(this, SWT.READ_ONLY);
+		cmbUsername.setBounds(124, 98, 156, 23);
+
+		lblDodajTehnikoOsoblje = new Label(this, SWT.NONE);
+		lblDodajTehnikoOsoblje.setText("Dodaj tehni\u010Dko osoblje:");
+		lblDodajTehnikoOsoblje.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblDodajTehnikoOsoblje.setBounds(124, 41, 179, 38);
+
+		lblDodajTehnicko = new Label(this, SWT.NONE);
+		lblDodajTehnicko.setImage(SWTResourceManager.getImage(frmDodajTehnickoOsoblje.class, "/ui/slike/Tehnicko-Add.png"));
+		lblDodajTehnicko.setBounds(10, 23, 55, 58);
+		createContents();
+
+		List<Odjeli> lista = DAO.getAll(Odjeli.class);
+		for (Odjeli d : lista)
+		{
+			cmbOdjel.dodajStavku(d, d.getNaziv());
+		}
+
+		List<Gradovi> lista2 = DAO.getAll(Gradovi.class);
+		for (Gradovi g : lista2)
+		{
+			cmbGradovi.dodajStavku(g, g.getNaziv());
+		}
+
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+		TypedQuery<KorisnickiNalog> q = em.createQuery("select k from KorisnickiNalog k  where k.tipK = ? AND  k.username !=? ",
+				KorisnickiNalog.class);
+		q.setParameter(1, TipKorisnika.tehnickoOsoblje);
+		q.setParameter(2, "tehnicko");
+		List<KorisnickiNalog> lista3 = q.getResultList();
+		for (KorisnickiNalog k : lista3)
+		{
+			cmbUsername.dodajStavku(k, k.getUsername());
+		}
+		em.close();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Novo tehnièko osoblje");
+		setSize(295, 342);
+
+	}
+}

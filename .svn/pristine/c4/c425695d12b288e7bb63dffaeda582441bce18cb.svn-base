@@ -1,0 +1,41 @@
+package servis;
+
+import helper.Konekcija;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import model.KorisnickiNalog;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+
+public class LoginServis
+{
+	public static KorisnickiNalog loginKorisnik(String username, String password)
+	{
+
+		EntityManager em = Konekcija.getEmf().createEntityManager();
+		TypedQuery<KorisnickiNalog> q = em.createQuery("select k from KorisnickiNalog k  where k.username = ? ", KorisnickiNalog.class);
+		q.setParameter(1, username);
+		List<KorisnickiNalog> k = q.getResultList();
+		EntityManager em2 = Konekcija.getEmf().createEntityManager();
+		TypedQuery<KorisnickiNalog> q2 = em2.createQuery("select k from KorisnickiNalog k  where k.password = ? ", KorisnickiNalog.class);
+		q2.setParameter(1, password);
+		List<KorisnickiNalog> k2 = q2.getResultList();
+		em.close();
+		em2.close();
+		if (k.size() == 0)
+		{
+			MessageDialog.openError(null, "Greška", "Username koji ste unijeli je pogrešan!");
+			return null;
+		} else if (k2.size() == 0)
+		{
+			MessageDialog.openError(null, "Greška", "Lozinka koju ste unijeli je pogrešna!");
+			return null;
+		} else
+			return k.get(0);
+	}
+
+}

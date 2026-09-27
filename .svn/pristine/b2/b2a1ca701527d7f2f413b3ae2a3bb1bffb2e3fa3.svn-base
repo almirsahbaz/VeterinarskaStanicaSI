@@ -1,0 +1,131 @@
+package ui;
+
+import model.Odjeli;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import servis.Dodavanje;
+
+public class frmOdjeli extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmOdjeli shell = new frmOdjeli(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private Label lblNazivOdjela;
+	private Text txtOdjel;
+	private Button btnSacuvaj;
+
+	private Button btnOdustani;
+	private Label lblDodajNoviOdjel;
+	private Label lblDodajOdjel;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmOdjeli(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmOdjeli.class, "/ui/slike/Button-Add-icon.png"));
+
+		lblNazivOdjela = new Label(this, SWT.NONE);
+		lblNazivOdjela.setBounds(20, 79, 93, 15);
+		lblNazivOdjela.setText("Naziv odjela:");
+
+		txtOdjel = new Text(this, SWT.BORDER);
+		txtOdjel.setBounds(119, 76, 166, 21);
+
+		btnSacuvaj = new Button(this, SWT.NONE);
+		btnSacuvaj.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				Odjeli odjel = new Odjeli();
+				String Odjel = txtOdjel.getText();
+				odjel.setNaziv(Odjel);
+				if (Odjel.isEmpty())
+				{
+					MessageDialog.openError(null, "Greška", "Polje naziv je obavezno za unos !");
+					return;
+				}
+				Dodavanje.DodajOdjel(odjel);
+				MessageDialog.openInformation(null, "Informacija", "Odjel uspješno dodat!");
+				close();
+			}
+		});
+		btnSacuvaj.setBounds(119, 119, 75, 25);
+		btnSacuvaj.setText("Sa\u010Duvaj");
+
+		btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				close();
+			}
+		});
+		btnOdustani.setBounds(210, 119, 75, 25);
+		btnOdustani.setText("Odustani");
+
+		lblDodajNoviOdjel = new Label(this, SWT.NONE);
+		lblDodajNoviOdjel.setText("Dodaj novi odjel:");
+		lblDodajNoviOdjel.setFont(SWTResourceManager.getFont("Arial", 10, SWT.BOLD));
+		lblDodajNoviOdjel.setBounds(119, 32, 179, 38);
+
+		lblDodajOdjel = new Label(this, SWT.NONE);
+		lblDodajOdjel.setImage(SWTResourceManager.getImage(frmOdjeli.class, "/ui/slike/Addfrm.png"));
+		lblDodajOdjel.setBounds(20, 15, 55, 58);
+		createContents();
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Unos odjela");
+		setSize(304, 185);
+
+	}
+}

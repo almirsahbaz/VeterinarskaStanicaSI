@@ -1,0 +1,100 @@
+package ui;
+
+import helper.DAO;
+import model.Lijekovi;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmPregledLijekova extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmPregledLijekova shell = new frmPregledLijekova(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Table tblLijekovi;
+	private final TableColumn tblclmnNewColumn;
+	private final TableColumn tblclmnRokTrajanja;
+
+	private final TableColumn tblclmnVrsta;
+
+	/**
+	 * Create the shell.
+	 * 
+	 * @param display
+	 */
+	public frmPregledLijekova(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+		setImage(SWTResourceManager.getImage(frmPregledLijekova.class, "/ui/slike/search-b-icon.png"));
+		setLayout(null);
+
+		tblLijekovi = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		tblLijekovi.setBounds(10, 10, 257, 260);
+		tblLijekovi.setHeaderVisible(true);
+		tblLijekovi.setLinesVisible(true);
+
+		tblclmnNewColumn = new TableColumn(tblLijekovi, SWT.NONE);
+		tblclmnNewColumn.setWidth(69);
+		tblclmnNewColumn.setText("Naziv");
+
+		tblclmnRokTrajanja = new TableColumn(tblLijekovi, SWT.NONE);
+		tblclmnRokTrajanja.setWidth(95);
+		tblclmnRokTrajanja.setText("Rok trajanja");
+
+		tblclmnVrsta = new TableColumn(tblLijekovi, SWT.NONE);
+		tblclmnVrsta.setWidth(87);
+		tblclmnVrsta.setText("Vrsta");
+		createContents();
+		for (Lijekovi l : DAO.getAll(Lijekovi.class))
+		{
+			final TableItem tblI = new TableItem(tblLijekovi, SWT.None);
+			tblI.setText(0, l.getNaziv());
+			tblI.setText(1, l.getRok_trajanja().toString());
+			tblI.setText(2, l.getVrsta());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Pregled lijekova");
+		setSize(276, 308);
+
+	}
+}

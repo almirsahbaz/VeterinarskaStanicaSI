@@ -1,0 +1,158 @@
+package ui;
+
+import helper.DAO;
+import helper.MojComboBox;
+
+import java.util.List;
+
+import model.Dijagnoze;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+public class frmIzmjeniDijagnozu extends Shell
+{
+	/**
+	 * Launch the application.
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			Display display = Display.getDefault();
+			frmIzmjeniDijagnozu shell = new frmIzmjeniDijagnozu(display);
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed())
+			{
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private final Text txtNazivDijagnoze;
+	private final MojComboBox cmbSifraDijagnoze;
+
+	public frmIzmjeniDijagnozu(Display display)
+	{
+		super(display, SWT.CLOSE | SWT.MIN | SWT.TITLE);
+
+		setImage(SWTResourceManager.getImage(frmIzmjeniDijagnozu.class, "/ui/slike/EditThumb.png"));
+		setLayout(null);
+
+		Label lblifraDijagnoze = new Label(this, SWT.NONE);
+		lblifraDijagnoze.setBounds(72, 10, 91, 15);
+		lblifraDijagnoze.setText("\u0160ifra dijagnoze:");
+
+		cmbSifraDijagnoze = new MojComboBox(this, SWT.READ_ONLY);
+		cmbSifraDijagnoze.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_cmbSifraDijagnoze_widgetSelected(arg0);
+			}
+		});
+		cmbSifraDijagnoze.setBounds(72, 40, 160, 23);
+
+		Label label = new Label(this, SWT.NONE);
+		label.setImage(SWTResourceManager.getImage(frmIzmjeniDijagnozu.class, "/ui/slike/Editing.png"));
+		label.setBounds(10, 0, 56, 79);
+
+		txtNazivDijagnoze = new Text(this, SWT.BORDER);
+		txtNazivDijagnoze.setBounds(72, 113, 160, 23);
+
+		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setBounds(72, 83, 141, 15);
+		lblNewLabel.setText("Naziv dijagnoze:");
+
+		Button btnSpasi = new Button(this, SWT.NONE);
+		btnSpasi.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnSpasi_widgetSelected(arg0);
+			}
+		});
+		btnSpasi.setBounds(72, 153, 75, 25);
+		btnSpasi.setText("Spasi");
+
+		Button btnOdustani = new Button(this, SWT.NONE);
+		btnOdustani.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				do_btnOdustani_widgetSelected(arg0);
+			}
+		});
+		btnOdustani.setBounds(157, 153, 75, 25);
+		btnOdustani.setText("Odustani");
+		createContents();
+		List<Dijagnoze> dijagnoze = DAO.getAll(Dijagnoze.class);
+
+		for (Dijagnoze d : dijagnoze)
+		{
+			cmbSifraDijagnoze.dodajStavku(d, d.getSifra_dijagnoze());
+		}
+	}
+
+	@Override
+	protected void checkSubclass()
+	{
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents()
+	{
+		setText("Izmjena dijagnoze");
+		setSize(265, 232);
+
+	}
+
+	protected void do_btnOdustani_widgetSelected(SelectionEvent arg0)
+	{
+		this.close();
+	}
+
+	protected void do_btnSpasi_widgetSelected(SelectionEvent arg0)
+	{
+		Dijagnoze d = cmbSifraDijagnoze.uzmiOznacenuStavku(Dijagnoze.class);
+		if (cmbSifraDijagnoze.getText() == "" || txtNazivDijagnoze.getText() == "")
+		{
+			MessageDialog.openError(null, "Greška", "Sva polja su obavezna za unos!");
+			cmbSifraDijagnoze.clearSelection();
+			return;
+		}
+		d.setNaziv_bolesti(txtNazivDijagnoze.getText());
+		DAO.update(d);
+		MessageDialog.openInformation(null, "Informacija", "Dijagnoza uspješno izmjenjena!");
+		this.close();
+	}
+
+	protected void do_cmbSifraDijagnoze_widgetSelected(SelectionEvent arg0)
+	{
+		Dijagnoze d = cmbSifraDijagnoze.uzmiOznacenuStavku(Dijagnoze.class);
+		txtNazivDijagnoze.setText(d.getNaziv_bolesti());
+	}
+}
